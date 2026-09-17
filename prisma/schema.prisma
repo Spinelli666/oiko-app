@@ -11,3 +11,65 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum CategoryType {
+  ESSENCIAL
+  IMPORTANTE
+  SUPERFLUO
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  categories   Category[]
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@map("users")
+}
+
+model Category {
+  id     String       @id @default(uuid())
+  userId String       @map("user_id")
+  name   String
+  type   CategoryType
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@map("categories")
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  categoryId  String   @map("category_id")
+  description String
+  amount      Decimal  @db.Decimal(12, 2)
+  date        DateTime @db.Date
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("transactions")
+}
+
+model Budget {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  categoryId     String   @map("category_id")
+  monthReference DateTime @map("month_reference") @db.Date
+  limitAmount    Decimal  @db.Decimal(12, 2) @map("limit_amount")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@unique([userId, categoryId, monthReference])
+  @@map("budgets")
+}
