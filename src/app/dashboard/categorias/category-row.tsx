@@ -4,6 +4,8 @@ import { useActionState, useState } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { deleteCategoryAction, updateCategoryAction } from "./actions";
 import {
+  CATEGORY_KIND_LABELS,
+  CATEGORY_KIND_OPTIONS,
   CATEGORY_TYPE_LABELS,
   CATEGORY_TYPE_OPTIONS,
 } from "./category-type-labels";
@@ -39,6 +41,17 @@ export function CategoryRow({ category }: { category: CategoryModel }) {
             defaultValue={category.name}
             className="flex-1 rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 outline-none focus:border-primary"
           />
+          <select
+            name="kind"
+            defaultValue={category.kind}
+            className="rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 outline-none focus:border-primary"
+          >
+            {CATEGORY_KIND_OPTIONS.map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
           <select
             name="type"
             defaultValue={category.type}
@@ -81,6 +94,7 @@ export function CategoryRow({ category }: { category: CategoryModel }) {
       <div>
         <p className="font-medium">{category.name}</p>
         <p className="text-sm text-text-secondary">
+          {CATEGORY_KIND_LABELS[category.kind]} ·{" "}
           {CATEGORY_TYPE_LABELS[category.type]}
         </p>
       </div>

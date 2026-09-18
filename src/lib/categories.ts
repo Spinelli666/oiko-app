@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { CategoryType } from "@/generated/prisma/enums";
+import { CategoryType, CategoryKind } from "@/generated/prisma/enums";
 
 export class CategoryNotFoundError extends Error {}
 
@@ -14,13 +14,15 @@ export function createCategory({
   userId,
   name,
   type,
+  kind,
 }: {
   userId: string;
   name: string;
   type: CategoryType;
+  kind: CategoryKind;
 }) {
   return prisma.category.create({
-    data: { userId, name, type },
+    data: { userId, name, type, kind },
   });
 }
 
@@ -29,15 +31,17 @@ export async function updateCategory({
   userId,
   name,
   type,
+  kind,
 }: {
   id: string;
   userId: string;
   name: string;
   type: CategoryType;
+  kind: CategoryKind;
 }) {
   const { count } = await prisma.category.updateMany({
     where: { id, userId },
-    data: { name, type },
+    data: { name, type, kind },
   });
 
   if (count === 0) {

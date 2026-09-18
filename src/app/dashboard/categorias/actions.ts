@@ -29,6 +29,7 @@ export async function createCategoryAction(
   const parsed = CategorySchema.safeParse({
     name: formData.get("name"),
     type: formData.get("type"),
+    kind: formData.get("kind"),
   });
 
   if (!parsed.success) {
@@ -53,6 +54,7 @@ export async function updateCategoryAction(
   const parsed = CategorySchema.safeParse({
     name: formData.get("name"),
     type: formData.get("type"),
+    kind: formData.get("kind"),
   });
 
   if (!parsed.success) {
