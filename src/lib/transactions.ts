@@ -3,18 +3,44 @@ import { CategoryNotFoundError } from "@/lib/categories";
 
 export class TransactionNotFoundError extends Error {}
 
-function currentMonthRange(reference = new Date()) {
-  const start = new Date(
+export function startOfCurrentMonth(reference = new Date()) {
+  return new Date(
     Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), 1)
   );
-  const end = new Date(
-    Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth() + 1, 1)
-  );
-  return { start, end };
 }
 
-export function getTransactionsForUser(userId: string) {
-  const { start, end } = currentMonthRange();
+/** Accepts a "YYYY-MM" string (e.g. from a `?mes=` query param) and returns
+ * the first day of that month in UTC. Falls back to the current month for
+ * anything missing or malformed. */
+export function parseMonthReference(monthParam?: string): Date {
+  const match = monthParam?.match(/^(\d{4})-(\d{2})$/);
+  if (!match) {
+    return startOfCurrentMonth();
+  }
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (month < 1 || month > 12) {
+    return startOfCurrentMonth();
+  }
+  return new Date(Date.UTC(year, month - 1, 1));
+}
+
+function monthRange(monthReference: Date) {
+  const end = new Date(
+    Date.UTC(
+      monthReference.getUTCFullYear(),
+      monthReference.getUTCMonth() + 1,
+      1
+    )
+  );
+  return { start: monthReference, end };
+}
+
+export function getTransactionsForUser(
+  userId: string,
+  monthReference: Date = startOfCurrentMonth()
+) {
+  const { start, end } = monthRange(monthReference);
   return prisma.transaction.findMany({
     where: { userId, date: { gte: start, lt: end } },
     include: { category: true },

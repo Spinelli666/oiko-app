@@ -5,14 +5,24 @@ import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { createTransactionAction } from "./actions";
 import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
 
-function today() {
-  return new Date().toISOString().slice(0, 10);
+function defaultDateFor(monthReference?: Date) {
+  const today = new Date();
+  const isCurrentMonth =
+    !monthReference ||
+    (monthReference.getUTCFullYear() === today.getUTCFullYear() &&
+      monthReference.getUTCMonth() === today.getUTCMonth());
+
+  return isCurrentMonth
+    ? today.toISOString().slice(0, 10)
+    : monthReference.toISOString().slice(0, 10);
 }
 
 export function AddTransactionForm({
   categories,
+  monthReference,
 }: {
   categories: CategoryModel[];
+  monthReference?: Date;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(
@@ -89,7 +99,7 @@ export function AddTransactionForm({
             name="date"
             type="date"
             required
-            defaultValue={today()}
+            defaultValue={defaultDateFor(monthReference)}
             className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
           />
         </div>

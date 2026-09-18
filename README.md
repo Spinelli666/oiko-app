@@ -18,7 +18,9 @@ Passos 1 e 2 do roadmap concluídos; Passo 4 (telas da V1) com todas as telas es
 - [x] Orçamento mensal por categoria de despesa, com barra de progresso e alerta visual quando o gasto ultrapassa o limite
 - [x] Proteção de rota: [src/proxy.ts](src/proxy.ts) redireciona `/dashboard` para `/login` quando não há sessão (arquivo `proxy.ts`, não `middleware.ts` — renomeado no Next.js 16)
 - [x] Identidade visual: logo e favicon ([src/components/oiko-logo.tsx](src/components/oiko-logo.tsx), [src/app/icon.svg](src/app/icon.svg)), paleta de cores aplicada em [globals.css](src/app/globals.css)
-- [ ] Histórico com filtro/busca por período — hoje a tela de transações só lista o mês corrente, sem navegação entre meses
+- [x] Navegação entre meses na tela de transações (`?mes=YYYY-MM`) — dashboard e orçamento continuam sempre no mês atual
+- [x] Categorias padrão pré-criadas no cadastro ([src/lib/categories.ts](src/lib/categories.ts): `DEFAULT_CATEGORIES`) — dez categorias comuns (Moradia, Alimentação, Transporte, Saúde, Educação, Assinaturas, Lazer, Compras, Salário, Outras receitas), pra não começar do zero
+- [ ] Filtro/busca por categoria dentro do histórico
 - [ ] Testar com um mês real de dados (critério de "V1 pronta", segundo o planejamento)
 - [ ] Deploy em produção (Vercel + Neon)
 

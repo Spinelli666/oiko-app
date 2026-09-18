@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { seedDefaultCategories } from "@/lib/categories";
 
 export class DuplicateEmailError extends Error {}
 
@@ -19,8 +20,12 @@ export async function createUser({
 
   const passwordHash = await bcrypt.hash(password, 12);
 
-  return prisma.user.create({
+  const user = await prisma.user.create({
     data: { name, email, passwordHash },
     select: { id: true, name: true, email: true },
   });
+
+  await seedDefaultCategories(user.id);
+
+  return user;
 }
