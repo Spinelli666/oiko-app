@@ -13,9 +13,10 @@ Passos 1 e 2 do roadmap concluídos; Passo 4 iniciado (login/cadastro/dashboard)
 - [x] Banco Postgres rodando localmente via Docker ([docker-compose.yml](docker-compose.yml)) — Neon ainda não configurado, mas a troca é só mudar a `DATABASE_URL` (ver [Stack](#stack))
 - [x] Migration inicial aplicada (`prisma/migrations/`) e client do Prisma gerado (`src/generated/prisma`, via driver adapter `@prisma/adapter-pg` — obrigatório no Prisma 7)
 - [x] Autenticação por e-mail/senha com [NextAuth (Auth.js v5)](https://authjs.dev): registro (hash de senha com bcrypt) e login via Credentials provider com sessão JWT ([src/auth.ts](src/auth.ts))
-- [x] Telas: landing ([/](src/app/page.tsx)), [login](src/app/login/page.tsx), [cadastro](src/app/cadastro/page.tsx) e um [dashboard](src/app/dashboard/page.tsx) protegido (só mostra saudação + logout por enquanto)
+- [x] Telas: landing ([/](src/app/page.tsx)), [login](src/app/login/page.tsx), [cadastro](src/app/cadastro/page.tsx), [dashboard](src/app/dashboard/page.tsx) protegido e [categorias](src/app/dashboard/categorias/page.tsx) (criar, editar, excluir — isolado por usuário)
 - [x] Proteção de rota: [src/proxy.ts](src/proxy.ts) redireciona `/dashboard` para `/login` quando não há sessão (arquivo `proxy.ts`, não `middleware.ts` — renomeado no Next.js 16)
-- [ ] Telas de categorias, lançar transação, orçamento e histórico — dashboard ainda não mostra dados reais
+- [x] Identidade visual: logo e favicon ([src/components/oiko-logo.tsx](src/components/oiko-logo.tsx), [src/app/icon.svg](src/app/icon.svg)), paleta de cores aplicada em [globals.css](src/app/globals.css)
+- [ ] Telas de lançar transação, orçamento e histórico — dashboard ainda não mostra dados reais (saldo, gastos por categoria)
 - [ ] Deploy em produção (Vercel + Neon)
 
 ## Stack

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 
@@ -32,11 +33,19 @@ export default async function DashboardPage() {
           </form>
         </div>
 
+        <div className="flex gap-3">
+          <Link
+            href="/dashboard/categorias"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
+          >
+            Categorias
+          </Link>
+        </div>
+
         <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
           <p className="text-text-secondary">
-            Login funcionando. O dashboard de verdade (saldo do mês, gastos
-            por categoria, orçamento) entra na próxima etapa, quando
-            categorias e transações tiverem telas de cadastro.
+            Saldo do mês, gastos por categoria e orçamento entram na próxima
+            etapa, quando transações e orçamento tiverem telas de cadastro.
           </p>
         </div>
       </div>
