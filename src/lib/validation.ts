@@ -23,3 +23,10 @@ export const TransactionSchema = z.object({
     .positive({ error: "O valor precisa ser maior que zero." }),
   date: z.iso.date({ error: "Data inválida." }),
 });
+
+export const BudgetSchema = z.object({
+  categoryId: z.string().min(1, { error: "Categoria inválida." }),
+  limitAmount: z.coerce
+    .number({ error: "Informe um valor." })
+    .positive({ error: "O limite precisa ser maior que zero." }),
+});

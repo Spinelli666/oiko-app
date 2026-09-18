@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
+import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { getTransactionsForUser } from "@/lib/transactions";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -14,19 +15,32 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const transactions = await getTransactionsForUser(session.user.id);
+  const [transactions, budgets] = await Promise.all([
+    getTransactionsForUser(session.user.id),
+    getBudgetsForCurrentMonth(session.user.id),
+  ]);
 
   const balance = transactions.reduce((sum, t) => sum + Number(t.amount), 0);
 
-  const expensesByCategory = new Map<string, number>();
+  const budgetByCategory = new Map(
+    budgets.map((b) => [b.categoryId, Number(b.limitAmount)])
+  );
+
+  const expensesByCategory = new Map<
+    string,
+    { name: string; spent: number }
+  >();
   for (const transaction of transactions) {
     const amount = Number(transaction.amount);
     if (amount >= 0) continue;
-    const current = expensesByCategory.get(transaction.category.name) ?? 0;
-    expensesByCategory.set(transaction.category.name, current - amount);
+    const current = expensesByCategory.get(transaction.categoryId)?.spent ?? 0;
+    expensesByCategory.set(transaction.categoryId, {
+      name: transaction.category.name,
+      spent: current - amount,
+    });
   }
   const sortedExpenses = [...expensesByCategory.entries()].sort(
-    (a, b) => b[1] - a[1]
+    (a, b) => b[1].spent - a[1].spent
   );
 
   return (
@@ -54,7 +68,7 @@ export default async function DashboardPage() {
           </form>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
           <Link
             href="/dashboard/transacoes"
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
@@ -66,6 +80,12 @@ export default async function DashboardPage() {
             className="rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium"
           >
             Categorias
+          </Link>
+          <Link
+            href="/dashboard/orcamento"
+            className="rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium"
+          >
+            Orçamento
           </Link>
         </div>
 
@@ -90,17 +110,31 @@ export default async function DashboardPage() {
             </p>
           ) : (
             <ul className="flex flex-col gap-2">
-              {sortedExpenses.map(([categoryName, total]) => (
-                <li
-                  key={categoryName}
-                  className="flex items-center justify-between"
-                >
-                  <span>{categoryName}</span>
-                  <span className="font-medium text-alert">
-                    {currencyFormatter.format(total)}
-                  </span>
-                </li>
-              ))}
+              {sortedExpenses.map(([categoryId, { name, spent }]) => {
+                const limit = budgetByCategory.get(categoryId);
+                const isOverBudget = limit !== undefined && spent > limit;
+                return (
+                  <li
+                    key={categoryId}
+                    className="flex items-center justify-between"
+                  >
+                    <span>{name}</span>
+                    <span
+                      className={`font-medium ${
+                        isOverBudget ? "text-alert" : ""
+                      }`}
+                    >
+                      {currencyFormatter.format(spent)}
+                      {limit !== undefined && (
+                        <span className="font-normal text-text-secondary">
+                          {" "}
+                          / {currencyFormatter.format(limit)}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

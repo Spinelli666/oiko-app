@@ -6,19 +6,20 @@ Veja o planejamento completo em [projeto-gestao-financeira-planejamento.md](./pr
 
 ## Status atual
 
-Passos 1 e 2 do roadmap concluídos; Passo 4 iniciado (login/cadastro/dashboard). O que já existe no repositório:
+Passos 1 e 2 do roadmap concluídos; Passo 4 (telas da V1) com todas as telas essenciais no ar. O que já existe no repositório:
 
 - [x] Projeto Next.js criado (App Router, TypeScript, Tailwind CSS, ESLint)
 - [x] Prisma com schema definido ([prisma/schema.prisma](prisma/schema.prisma)): models `User`, `Category`, `Transaction`, `Budget`, todas isoladas por `userId`
 - [x] Banco Postgres rodando localmente via Docker ([docker-compose.yml](docker-compose.yml)) — Neon ainda não configurado, mas a troca é só mudar a `DATABASE_URL` (ver [Stack](#stack))
 - [x] Migration inicial aplicada (`prisma/migrations/`) e client do Prisma gerado (`src/generated/prisma`, via driver adapter `@prisma/adapter-pg` — obrigatório no Prisma 7)
 - [x] Autenticação por e-mail/senha com [NextAuth (Auth.js v5)](https://authjs.dev): registro (hash de senha com bcrypt) e login via Credentials provider com sessão JWT ([src/auth.ts](src/auth.ts))
-- [x] Telas: landing ([/](src/app/page.tsx)), [login](src/app/login/page.tsx), [cadastro](src/app/cadastro/page.tsx), [dashboard](src/app/dashboard/page.tsx) (saldo do mês e gastos por categoria reais), [categorias](src/app/dashboard/categorias/page.tsx) e [transações](src/app/dashboard/transacoes/page.tsx) (criar, editar, excluir — isolado por usuário; categorias e transações abrem como modal a partir do dashboard, via Parallel/Intercepting Routes, e como página cheia se acessadas direto)
+- [x] Telas: landing ([/](src/app/page.tsx)), [login](src/app/login/page.tsx), [cadastro](src/app/cadastro/page.tsx), [dashboard](src/app/dashboard/page.tsx) (saldo do mês, gastos por categoria e comparação com orçamento), [categorias](src/app/dashboard/categorias/page.tsx), [transações](src/app/dashboard/transacoes/page.tsx) e [orçamento mensal](src/app/dashboard/orcamento/page.tsx) — todas isoladas por usuário; categorias/transações/orçamento abrem como modal a partir do dashboard (Parallel/Intercepting Routes) e como página cheia se acessadas direto
 - [x] Categoria já define se é Receita ou Despesa (`Category.kind`) — o sinal do valor da transação é derivado da categoria escolhida, não perguntado de novo na hora de lançar
+- [x] Orçamento mensal por categoria de despesa, com barra de progresso e alerta visual quando o gasto ultrapassa o limite
 - [x] Proteção de rota: [src/proxy.ts](src/proxy.ts) redireciona `/dashboard` para `/login` quando não há sessão (arquivo `proxy.ts`, não `middleware.ts` — renomeado no Next.js 16)
 - [x] Identidade visual: logo e favicon ([src/components/oiko-logo.tsx](src/components/oiko-logo.tsx), [src/app/icon.svg](src/app/icon.svg)), paleta de cores aplicada em [globals.css](src/app/globals.css)
-- [ ] Tela de orçamento mensal (definir limite por categoria, comparar com gasto) — falta pro dashboard mostrar orçado vs. gasto
-- [ ] Histórico com filtro/busca por período (hoje o dashboard só mostra o mês atual)
+- [ ] Histórico com filtro/busca por período — hoje a tela de transações só lista o mês corrente, sem navegação entre meses
+- [ ] Testar com um mês real de dados (critério de "V1 pronta", segundo o planejamento)
 - [ ] Deploy em produção (Vercel + Neon)
 
 ## Stack
