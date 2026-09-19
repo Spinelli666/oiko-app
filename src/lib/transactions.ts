@@ -25,6 +25,21 @@ export function parseMonthReference(monthParam?: string): Date {
   return new Date(Date.UTC(year, month - 1, 1));
 }
 
+/** Sums the absolute value of despesa transactions (negative amounts) per
+ * category. Receita transactions (positive amounts) and zero-amount
+ * transactions don't count as spend. */
+export function sumExpensesByCategory(
+  transactions: Array<{ categoryId: string; amount: number }>
+): Map<string, number> {
+  const result = new Map<string, number>();
+  for (const transaction of transactions) {
+    if (transaction.amount >= 0) continue;
+    const current = result.get(transaction.categoryId) ?? 0;
+    result.set(transaction.categoryId, current - transaction.amount);
+  }
+  return result;
+}
+
 function monthRange(monthReference: Date) {
   const end = new Date(
     Date.UTC(
@@ -45,6 +60,13 @@ export function getTransactionsForUser(
     where: { userId, date: { gte: start, lt: end } },
     include: { category: true },
     orderBy: { date: "desc" },
+  });
+}
+
+export function getTransactionsForUserSince(userId: string, since: Date) {
+  return prisma.transaction.findMany({
+    where: { userId, date: { gte: since } },
+    orderBy: { date: "asc" },
   });
 }
 

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
+import { computeBudgetStatus } from "@/lib/budget-status";
 import { removeBudgetAction, setBudgetAction } from "./actions";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -25,11 +26,10 @@ export function BudgetRow({
     undefined
   );
 
-  const isOverBudget = limitAmount !== undefined && spentAmount > limitAmount;
-  const percentage =
-    limitAmount !== undefined
-      ? Math.min(100, Math.round((spentAmount / limitAmount) * 100))
-      : null;
+  const { isOverBudget, percentage } = computeBudgetStatus(
+    spentAmount,
+    limitAmount
+  );
 
   return (
     <li className="flex flex-col gap-2 border-b border-text-secondary/10 pb-4 last:border-0 last:pb-0">

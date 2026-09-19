@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
-import { getTransactionsForUser } from "@/lib/transactions";
+import { computeBudgetStatus } from "@/lib/budget-status";
+import { getTransactionsForUser, sumExpensesByCategory } from "@/lib/transactions";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -26,22 +27,21 @@ export default async function DashboardPage() {
     budgets.map((b) => [b.categoryId, Number(b.limitAmount)])
   );
 
-  const expensesByCategory = new Map<
-    string,
-    { name: string; spent: number }
-  >();
-  for (const transaction of transactions) {
-    const amount = Number(transaction.amount);
-    if (amount >= 0) continue;
-    const current = expensesByCategory.get(transaction.categoryId)?.spent ?? 0;
-    expensesByCategory.set(transaction.categoryId, {
-      name: transaction.category.name,
-      spent: current - amount,
-    });
-  }
-  const sortedExpenses = [...expensesByCategory.entries()].sort(
-    (a, b) => b[1].spent - a[1].spent
+  const spentByCategory = sumExpensesByCategory(
+    transactions.map((t) => ({
+      categoryId: t.categoryId,
+      amount: Number(t.amount),
+    }))
   );
+  const categoryNameById = new Map(
+    transactions.map((t) => [t.categoryId, t.category.name])
+  );
+  const sortedExpenses = [...spentByCategory.entries()]
+    .map(
+      ([categoryId, spent]) =>
+        [categoryId, { name: categoryNameById.get(categoryId) ?? "", spent }] as const
+    )
+    .sort((a, b) => b[1].spent - a[1].spent);
 
   return (
     <div className="flex flex-1 flex-col px-4 py-16">
@@ -87,6 +87,12 @@ export default async function DashboardPage() {
           >
             Orçamento
           </Link>
+          <Link
+            href="/dashboard/evolucao"
+            className="rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium"
+          >
+            Evolução
+          </Link>
         </div>
 
         <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
@@ -112,7 +118,7 @@ export default async function DashboardPage() {
             <ul className="flex flex-col gap-2">
               {sortedExpenses.map(([categoryId, { name, spent }]) => {
                 const limit = budgetByCategory.get(categoryId);
-                const isOverBudget = limit !== undefined && spent > limit;
+                const { isOverBudget } = computeBudgetStatus(spent, limit);
                 return (
                   <li
                     key={categoryId}

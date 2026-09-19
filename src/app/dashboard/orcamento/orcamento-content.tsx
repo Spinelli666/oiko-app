@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { getCategoriesForUser } from "@/lib/categories";
-import { getTransactionsForUser } from "@/lib/transactions";
+import { getTransactionsForUser, sumExpensesByCategory } from "@/lib/transactions";
 import { OrcamentoList } from "./orcamento-list";
 
 export async function OrcamentoContent() {
@@ -40,13 +40,12 @@ export async function OrcamentoContent() {
 
   const budgetByCategory = new Map(budgets.map((b) => [b.categoryId, b]));
 
-  const spentByCategory = new Map<string, number>();
-  for (const transaction of transactions) {
-    const amount = Number(transaction.amount);
-    if (amount >= 0) continue;
-    const current = spentByCategory.get(transaction.categoryId) ?? 0;
-    spentByCategory.set(transaction.categoryId, current - amount);
-  }
+  const spentByCategory = sumExpensesByCategory(
+    transactions.map((t) => ({
+      categoryId: t.categoryId,
+      amount: Number(t.amount),
+    }))
+  );
 
   const rows = expenseCategories.map((category) => {
     const budget = budgetByCategory.get(category.id);
