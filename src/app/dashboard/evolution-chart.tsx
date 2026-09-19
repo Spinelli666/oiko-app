@@ -76,7 +76,7 @@ export function EvolutionChart({
     label: formatBucketLabel(d.bucketStart, granularity),
     Receitas: d.receitas,
     Despesas: d.despesas,
-    Saldo: d.saldo,
+    Saldo: granularity === "diario" && d.receitas === 0 ? 0 : d.saldo,
   }));
 
   return (
@@ -107,7 +107,7 @@ export function EvolutionChart({
           <Bar dataKey="Receitas" fill="var(--success)" radius={[4, 4, 0, 0]} />
           <Bar dataKey="Despesas" fill="var(--alert)" radius={[4, 4, 0, 0]} />
           <Line
-            type="monotone"
+            type="linear"
             dataKey="Saldo"
             stroke="var(--primary)"
             strokeWidth={2}
