@@ -38,13 +38,17 @@ model User {
 }
 
 model Category {
-  id     String       @id @default(uuid())
-  userId String       @map("user_id")
-  name   String
-  type   CategoryType
-  kind   CategoryKind @default(DESPESA)
+  id        String       @id @default(uuid())
+  userId    String       @map("user_id")
+  parentId  String?      @map("parent_id")
+  name      String
+  type      CategoryType
+  kind      CategoryKind @default(DESPESA)
+  isDefault Boolean      @default(false) @map("is_default")
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent       Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children     Category[]    @relation("CategoryHierarchy")
   transactions Transaction[]
   budgets      Budget[]
 

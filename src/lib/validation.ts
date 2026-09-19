@@ -13,6 +13,7 @@ export const CategorySchema = z.object({
   name: z.string().trim().min(2, { error: "Nome muito curto." }),
   type: z.enum(CategoryType, { error: "Selecione uma classificação." }),
   kind: z.enum(CategoryKind, { error: "Selecione receita ou despesa." }),
+  parentId: z.string().trim().min(1).optional(),
 });
 
 export const TransactionSchema = z.object({

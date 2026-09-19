@@ -1,8 +1,12 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getCategoriesForUser } from "@/lib/categories";
+import {
+  buildCategoryTree,
+  getCategoriesForUser,
+  getTransactionCountsByCategory,
+} from "@/lib/categories";
 import { AddCategoryForm } from "./add-category-form";
-import { CategoryRow } from "./category-row";
+import { CategoryGroup } from "./category-group";
 
 export async function CategoriesContent() {
   const session = await auth();
@@ -10,7 +14,26 @@ export async function CategoriesContent() {
     redirect("/login");
   }
 
-  const categories = await getCategoriesForUser(session.user.id);
+  const [categories, transactionCounts] = await Promise.all([
+    getCategoriesForUser(session.user.id),
+    getTransactionCountsByCategory(session.user.id),
+  ]);
+
+  const { receitas, despesas } = buildCategoryTree(categories);
+
+  const reassignOptionsByCategory = new Map(
+    categories.map((category) => [
+      category.id,
+      categories
+        .filter((c) => c.id !== category.id && c.kind === category.kind)
+        .map((c) => ({
+          id: c.id,
+          name: c.parentId
+            ? `${categories.find((p) => p.id === c.parentId)?.name ?? ""} > ${c.name}`
+            : c.name,
+        })),
+    ])
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -21,14 +44,36 @@ export async function CategoriesContent() {
       </div>
 
       <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        {categories.length === 0 ? (
-          <p className="text-text-secondary">
-            Nenhuma categoria ainda. Crie a primeira acima.
-          </p>
+        <h2 className="mb-3 text-lg font-semibold">Receitas</h2>
+        {receitas.length === 0 ? (
+          <p className="text-text-secondary">Nenhuma categoria de receita ainda.</p>
         ) : (
           <ul>
-            {categories.map((category) => (
-              <CategoryRow key={category.id} category={category} />
+            {receitas.map((category) => (
+              <CategoryGroup
+                key={category.id}
+                category={category}
+                transactionCounts={transactionCounts}
+                reassignOptionsByCategory={reassignOptionsByCategory}
+              />
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
+        <h2 className="mb-3 text-lg font-semibold">Despesas</h2>
+        {despesas.length === 0 ? (
+          <p className="text-text-secondary">Nenhuma categoria de despesa ainda.</p>
+        ) : (
+          <ul>
+            {despesas.map((category) => (
+              <CategoryGroup
+                key={category.id}
+                category={category}
+                transactionCounts={transactionCounts}
+                reassignOptionsByCategory={reassignOptionsByCategory}
+              />
             ))}
           </ul>
         )}

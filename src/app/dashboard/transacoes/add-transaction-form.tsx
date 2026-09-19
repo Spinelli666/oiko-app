@@ -24,6 +24,8 @@ export function AddTransactionForm({
   categories: CategoryModel[];
   monthReference?: Date;
 }) {
+  const categoryNameById = new Map(categories.map((c) => [c.id, c.name]));
+
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, isPending] = useActionState(
     async (
@@ -68,7 +70,10 @@ export function AddTransactionForm({
           >
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
-                {category.name} ({CATEGORY_KIND_LABELS[category.kind]})
+                {category.parentId
+                  ? `${categoryNameById.get(category.parentId) ?? ""} > ${category.name}`
+                  : category.name}{" "}
+                ({CATEGORY_KIND_LABELS[category.kind]})
               </option>
             ))}
           </select>
