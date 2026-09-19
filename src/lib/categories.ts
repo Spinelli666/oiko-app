@@ -22,6 +22,7 @@ export const DEFAULT_CATEGORIES: Array<{
   { name: "Assinaturas", kind: "DESPESA", type: "IMPORTANTE" },
   { name: "Lazer", kind: "DESPESA", type: "SUPERFLUO" },
   { name: "Compras", kind: "DESPESA", type: "SUPERFLUO" },
+  { name: "Outras Despesas", kind: "DESPESA", type: "IMPORTANTE" },
   { name: "Salário", kind: "RECEITA", type: "IMPORTANTE" },
   { name: "Outras receitas", kind: "RECEITA", type: "IMPORTANTE" },
 ];
