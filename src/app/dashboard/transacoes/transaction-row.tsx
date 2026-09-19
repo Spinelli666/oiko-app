@@ -6,7 +6,7 @@ import type { TransactionGetPayload } from "@/generated/prisma/models/Transactio
 import { deleteTransactionAction, updateTransactionAction } from "./actions";
 import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
 
-type TransactionWithCategory = Omit<
+export type TransactionWithCategory = Omit<
   TransactionGetPayload<{ include: { category: true } }>,
   "amount"
 > & { amount: number };

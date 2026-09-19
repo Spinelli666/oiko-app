@@ -5,7 +5,7 @@ import { getCategoriesForUser } from "@/lib/categories";
 import { getTransactionsForUser, startOfCurrentMonth } from "@/lib/transactions";
 import { AddTransactionForm } from "./add-transaction-form";
 import { MonthNav } from "./month-nav";
-import { TransactionRow } from "./transaction-row";
+import { TransactionsList } from "./transactions-list";
 
 export async function TransactionsContent({
   monthReference,
@@ -55,26 +55,13 @@ export async function TransactionsContent({
         <AddTransactionForm categories={categories} monthReference={effectiveMonth} />
       </div>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        {transactions.length === 0 ? (
-          <p className="text-text-secondary">
-            Nenhuma transação lançada neste mês ainda.
-          </p>
-        ) : (
-          <ul>
-            {transactions.map((transaction) => (
-              <TransactionRow
-                key={transaction.id}
-                transaction={{
-                  ...transaction,
-                  amount: Number(transaction.amount),
-                }}
-                categories={categories}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
+      <TransactionsList
+        transactions={transactions.map((transaction) => ({
+          ...transaction,
+          amount: Number(transaction.amount),
+        }))}
+        categories={categories}
+      />
     </div>
   );
 }

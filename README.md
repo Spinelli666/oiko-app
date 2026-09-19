@@ -22,7 +22,7 @@ Passos 1 e 2 do roadmap concluídos; Passo 4 (telas da V1) com todas as telas es
 - [x] Categorias padrão pré-criadas no cadastro ([src/lib/categories.ts](src/lib/categories.ts): `DEFAULT_CATEGORIES`) — onze categorias comuns (Moradia, Alimentação, Transporte, Saúde, Educação, Assinaturas, Lazer, Compras, Outras Despesas, Salário, Outras receitas), pra não começar do zero; marcadas como padrão (`Category.isDefault`) e não podem ser excluídas
 - [x] Subcategorias: cada categoria de nível principal pode ter subcategorias (`Category.parentId`), que herdam a receita/despesa da categoria pai; tela de [categorias](src/app/dashboard/categorias/page.tsx) mostra receitas e despesas em seções separadas, cada uma com suas subcategorias aninhadas
 - [x] Exclusão de categoria/subcategoria com transações: se houver transações lançadas nela, o usuário escolhe para qual outra categoria (do mesmo tipo receita/despesa) elas devem ser movidas antes da exclusão; categorias com subcategorias não podem ser excluídas até as subcategorias serem removidas ou movidas
-- [ ] Filtro/busca por categoria dentro do histórico
+- [x] Filtro por categoria no histórico de transações ([transactions-list.tsx](src/app/dashboard/transacoes/transactions-list.tsx))
 - [ ] Testar com um mês real de dados (critério de "V1 pronta", segundo o planejamento)
 - [ ] Deploy em produção (Vercel + Neon)
 
