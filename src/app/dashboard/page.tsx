@@ -3,16 +3,25 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { computeBudgetStatus } from "@/lib/budget-status";
-import { computeMonthlyEvolution, lastNMonths } from "@/lib/evolution";
 import {
   getTransactionsForUserSince,
   startOfCurrentMonth,
   sumExpensesByCategory,
   sumIncomeByCategory,
 } from "@/lib/transactions";
-import { EvolutionChart } from "./evolution-chart";
+import { EvolutionSection } from "./evolution-section";
 
-const MONTHS_BACK = 6;
+const EVOLUTION_LOOKBACK_YEARS = 5;
+
+function evolutionLookbackStart(reference = new Date()) {
+  return new Date(
+    Date.UTC(
+      reference.getUTCFullYear() - EVOLUTION_LOOKBACK_YEARS,
+      reference.getUTCMonth(),
+      reference.getUTCDate()
+    )
+  );
+}
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -25,10 +34,8 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const months = lastNMonths(MONTHS_BACK);
-
   const [allTransactions, budgets] = await Promise.all([
-    getTransactionsForUserSince(session.user.id, months[0]),
+    getTransactionsForUserSince(session.user.id, evolutionLookbackStart()),
     getBudgetsForCurrentMonth(session.user.id),
   ]);
 
@@ -37,10 +44,10 @@ export default async function DashboardPage() {
 
   const balance = transactions.reduce((sum, t) => sum + Number(t.amount), 0);
 
-  const evolution = computeMonthlyEvolution(
-    allTransactions.map((t) => ({ date: t.date, amount: Number(t.amount) })),
-    months
-  );
+  const evolutionTransactions = allTransactions.map((t) => ({
+    date: t.date,
+    amount: Number(t.amount),
+  }));
 
   const budgetByCategory = new Map(
     budgets.map((b) => [b.categoryId, Number(b.limitAmount)])
@@ -135,9 +142,9 @@ export default async function DashboardPage() {
 
         <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
           <p className="mb-3 text-sm font-medium text-text-secondary">
-            Evolução ({MONTHS_BACK} meses)
+            Evolução
           </p>
-          <EvolutionChart data={evolution} />
+          <EvolutionSection transactions={evolutionTransactions} />
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

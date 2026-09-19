@@ -1,69 +1,153 @@
 import { describe, expect, it } from "vitest";
-import { computeMonthlyEvolution, lastNMonths } from "./evolution";
+import {
+  bucketStart,
+  bucketsInRange,
+  computeEvolution,
+  defaultRangeFor,
+} from "./evolution";
 
-describe("lastNMonths", () => {
-  it("retorna os últimos N meses terminando no mês de referência, do mais antigo pro mais recente", () => {
-    const reference = new Date(Date.UTC(2026, 8, 15)); // 15/09/2026
-    const months = lastNMonths(3, reference);
+describe("bucketStart", () => {
+  it("semanal: volta pra segunda-feira daquela semana", () => {
+    const wednesday = new Date(Date.UTC(2026, 8, 16)); // quarta, 16/09/2026
+    expect(bucketStart(wednesday, "semanal").toISOString()).toBe(
+      "2026-09-14T00:00:00.000Z" // segunda anterior
+    );
+  });
 
-    expect(months.map((m) => m.toISOString())).toEqual([
-      "2026-07-01T00:00:00.000Z",
-      "2026-08-01T00:00:00.000Z",
-      "2026-09-01T00:00:00.000Z",
+  it("semanal: domingo pertence à semana que começou na segunda anterior", () => {
+    const sunday = new Date(Date.UTC(2026, 8, 20)); // domingo, 20/09/2026
+    expect(bucketStart(sunday, "semanal").toISOString()).toBe(
+      "2026-09-14T00:00:00.000Z"
+    );
+  });
+
+  it("mensal: volta pro primeiro dia do mês", () => {
+    const date = new Date(Date.UTC(2026, 8, 16));
+    expect(bucketStart(date, "mensal").toISOString()).toBe(
+      "2026-09-01T00:00:00.000Z"
+    );
+  });
+
+  it("anual: volta pro primeiro dia do ano", () => {
+    const date = new Date(Date.UTC(2026, 8, 16));
+    expect(bucketStart(date, "anual").toISOString()).toBe(
+      "2026-01-01T00:00:00.000Z"
+    );
+  });
+});
+
+describe("bucketsInRange", () => {
+  it("gera os buckets semanais entre duas datas, do mais antigo pro mais recente", () => {
+    const from = new Date(Date.UTC(2026, 8, 1));
+    const to = new Date(Date.UTC(2026, 8, 20));
+    const buckets = bucketsInRange(from, to, "semanal");
+
+    expect(buckets.map((b) => b.toISOString())).toEqual([
+      "2026-08-31T00:00:00.000Z",
+      "2026-09-07T00:00:00.000Z",
+      "2026-09-14T00:00:00.000Z",
     ]);
   });
 
-  it("atravessa a virada de ano corretamente", () => {
-    const reference = new Date(Date.UTC(2026, 1, 10)); // fevereiro/2026
-    const months = lastNMonths(3, reference);
+  it("gera os buckets mensais entre duas datas, atravessando o ano", () => {
+    const from = new Date(Date.UTC(2025, 11, 15));
+    const to = new Date(Date.UTC(2026, 1, 10));
+    const buckets = bucketsInRange(from, to, "mensal");
 
-    expect(months.map((m) => m.toISOString())).toEqual([
+    expect(buckets.map((b) => b.toISOString())).toEqual([
       "2025-12-01T00:00:00.000Z",
       "2026-01-01T00:00:00.000Z",
       "2026-02-01T00:00:00.000Z",
     ]);
   });
+
+  it("gera os buckets anuais entre duas datas", () => {
+    const from = new Date(Date.UTC(2023, 5, 1));
+    const to = new Date(Date.UTC(2026, 2, 1));
+    const buckets = bucketsInRange(from, to, "anual");
+
+    expect(buckets.map((b) => b.toISOString())).toEqual([
+      "2023-01-01T00:00:00.000Z",
+      "2024-01-01T00:00:00.000Z",
+      "2025-01-01T00:00:00.000Z",
+      "2026-01-01T00:00:00.000Z",
+    ]);
+  });
+
+  it("retorna uma lista vazia quando a data inicial é depois da final", () => {
+    const from = new Date(Date.UTC(2026, 8, 20));
+    const to = new Date(Date.UTC(2026, 8, 1));
+    expect(bucketsInRange(from, to, "mensal")).toEqual([]);
+  });
 });
 
-describe("computeMonthlyEvolution", () => {
-  it("agrupa receitas e despesas por mês e calcula o saldo", () => {
-    const months = [
+describe("computeEvolution", () => {
+  it("agrupa receitas e despesas por bucket e calcula o saldo", () => {
+    const buckets = [
       new Date(Date.UTC(2026, 7, 1)),
       new Date(Date.UTC(2026, 8, 1)),
     ];
     const transactions = [
-      { date: new Date(Date.UTC(2026, 7, 5)), amount: 1000 }, // receita ago
-      { date: new Date(Date.UTC(2026, 7, 10)), amount: -300 }, // despesa ago
-      { date: new Date(Date.UTC(2026, 8, 2)), amount: -50 }, // despesa set
+      { date: new Date(Date.UTC(2026, 7, 5)), amount: 1000 },
+      { date: new Date(Date.UTC(2026, 7, 10)), amount: -300 },
+      { date: new Date(Date.UTC(2026, 8, 2)), amount: -50 },
     ];
 
-    const result = computeMonthlyEvolution(transactions, months);
+    const result = computeEvolution(transactions, buckets, "mensal");
 
     expect(result).toEqual([
-      { monthReference: months[0], receitas: 1000, despesas: 300, saldo: 700 },
-      { monthReference: months[1], receitas: 0, despesas: 50, saldo: -50 },
+      { bucketStart: buckets[0], receitas: 1000, despesas: 300, saldo: 700 },
+      { bucketStart: buckets[1], receitas: 0, despesas: 50, saldo: -50 },
     ]);
   });
 
-  it("ignora transações fora do intervalo de meses informado", () => {
-    const months = [new Date(Date.UTC(2026, 8, 1))];
+  it("ignora transações fora dos buckets informados", () => {
+    const buckets = [new Date(Date.UTC(2026, 8, 1))];
+    const transactions = [{ date: new Date(Date.UTC(2026, 5, 1)), amount: 500 }];
+
+    const result = computeEvolution(transactions, buckets, "mensal");
+
+    expect(result).toEqual([
+      { bucketStart: buckets[0], receitas: 0, despesas: 0, saldo: 0 },
+    ]);
+  });
+
+  it("agrega corretamente no modo semanal", () => {
+    const buckets = [new Date(Date.UTC(2026, 8, 14))]; // segunda 14/09
     const transactions = [
-      { date: new Date(Date.UTC(2026, 5, 1)), amount: 500 },
+      { date: new Date(Date.UTC(2026, 8, 16)), amount: -100 }, // quarta, mesma semana
+      { date: new Date(Date.UTC(2026, 8, 21)), amount: -50 }, // segunda seguinte, fora
     ];
 
-    const result = computeMonthlyEvolution(transactions, months);
+    const result = computeEvolution(transactions, buckets, "semanal");
 
     expect(result).toEqual([
-      { monthReference: months[0], receitas: 0, despesas: 0, saldo: 0 },
+      { bucketStart: buckets[0], receitas: 0, despesas: 100, saldo: -100 },
     ]);
   });
+});
 
-  it("retorna zeros para um mês sem nenhuma transação", () => {
-    const months = [new Date(Date.UTC(2026, 8, 1))];
-    const result = computeMonthlyEvolution([], months);
+describe("defaultRangeFor", () => {
+  it("mensal: últimos 6 meses terminando hoje", () => {
+    const reference = new Date(Date.UTC(2026, 8, 19));
+    const { from, to } = defaultRangeFor("mensal", reference);
 
-    expect(result).toEqual([
-      { monthReference: months[0], receitas: 0, despesas: 0, saldo: 0 },
-    ]);
+    expect(from.toISOString()).toBe("2026-04-01T00:00:00.000Z");
+    expect(to).toBe(reference);
+  });
+
+  it("anual: últimos 5 anos terminando hoje", () => {
+    const reference = new Date(Date.UTC(2026, 8, 19));
+    const { from } = defaultRangeFor("anual", reference);
+
+    expect(from.toISOString()).toBe("2022-01-01T00:00:00.000Z");
+  });
+
+  it("semanal: últimas 8 semanas terminando hoje", () => {
+    const reference = new Date(Date.UTC(2026, 8, 19)); // sábado
+    const { from } = defaultRangeFor("semanal", reference);
+
+    // segunda da semana de referência é 14/09; 7 semanas antes = 27/07
+    expect(from.toISOString()).toBe("2026-07-27T00:00:00.000Z");
   });
 });

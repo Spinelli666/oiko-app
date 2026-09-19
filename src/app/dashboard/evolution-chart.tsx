@@ -11,32 +11,68 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { MonthlyEvolution } from "@/lib/evolution";
+import type { EvolutionPoint, Granularity } from "@/lib/evolution";
 
-const monthLabelFormatter = new Intl.DateTimeFormat("pt-BR", {
+const DAY_LABEL_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "2-digit",
+  timeZone: "UTC",
+});
+
+const MONTH_LABEL_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
   month: "short",
   year: "2-digit",
   timeZone: "UTC",
 });
+
+const YEAR_LABEL_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function formatBucketLabel(date: Date, granularity: Granularity) {
+  switch (granularity) {
+    case "semanal":
+      return WEEK_LABEL_FORMATTER.format(date);
+    case "mensal":
+      return MONTH_LABEL_FORMATTER.format(date);
+    case "anual":
+      return YEAR_LABEL_FORMATTER.format(date);
+  }
+}
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
 });
 
-export function EvolutionChart({ data }: { data: MonthlyEvolution[] }) {
+export function EvolutionChart({
+  data,
+  granularity,
+}: {
+  data: EvolutionPoint[];
+  granularity: Granularity;
+}) {
   const hasData = data.some((d) => d.receitas !== 0 || d.despesas !== 0);
+
+  if (data.length === 0) {
+    return (
+      <p className="text-text-secondary">
+        Escolha um período com data inicial anterior à final.
+      </p>
+    );
+  }
 
   if (!hasData) {
     return (
       <p className="text-text-secondary">
-        Nenhuma transação nos últimos meses ainda.
+        Nenhuma transação no período selecionado.
       </p>
     );
   }
 
   const chartData = data.map((d) => ({
-    month: monthLabelFormatter.format(d.monthReference),
+    label: formatBucketLabel(d.bucketStart, granularity),
     Receitas: d.receitas,
     Despesas: d.despesas,
     Saldo: d.saldo,
@@ -51,7 +87,7 @@ export function EvolutionChart({ data }: { data: MonthlyEvolution[] }) {
             stroke="var(--text-secondary)"
             strokeOpacity={0.15}
           />
-          <XAxis dataKey="month" stroke="var(--text-secondary)" fontSize={12} />
+          <XAxis dataKey="label" stroke="var(--text-secondary)" fontSize={12} />
           <YAxis
             stroke="var(--text-secondary)"
             fontSize={12}
