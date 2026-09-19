@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
-import { computeBudgetStatus } from "@/lib/budget-status";
 import {
   getTransactionsForUserSince,
   startOfCurrentMonth,
@@ -185,18 +184,13 @@ export default async function DashboardPage() {
               <ul className="flex flex-col gap-2">
                 {sortedExpenses.map(([categoryId, { name, spent }]) => {
                   const limit = budgetByCategory.get(categoryId);
-                  const { isOverBudget } = computeBudgetStatus(spent, limit);
                   return (
                     <li
                       key={categoryId}
                       className="flex items-center justify-between"
                     >
                       <span>{name}</span>
-                      <span
-                        className={`font-medium ${
-                          isOverBudget ? "text-alert" : ""
-                        }`}
-                      >
+                      <span className="font-medium text-alert">
                         {currencyFormatter.format(spent)}
                         {limit !== undefined && (
                           <span className="font-normal text-text-secondary">
