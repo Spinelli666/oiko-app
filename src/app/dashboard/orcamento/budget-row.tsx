@@ -26,16 +26,21 @@ export function BudgetRow({
     undefined
   );
 
-  const { isOverBudget, percentage } = computeBudgetStatus(
+  const { isOverBudget, isNearLimit, percentage } = computeBudgetStatus(
     spentAmount,
     limitAmount
   );
+  const statusColor = isOverBudget
+    ? "text-alert"
+    : isNearLimit
+      ? "text-accent"
+      : "text-text-secondary";
 
   return (
     <li className="flex flex-col gap-2 border-b border-text-secondary/10 pb-4 last:border-0 last:pb-0">
       <div className="flex items-center justify-between">
         <span className="font-medium">{category.name}</span>
-        <span className={isOverBudget ? "text-alert" : "text-text-secondary"}>
+        <span className={statusColor}>
           {currencyFormatter.format(spentAmount)}
           {limitAmount !== undefined &&
             ` de ${currencyFormatter.format(limitAmount)}`}
@@ -45,7 +50,9 @@ export function BudgetRow({
       {percentage !== null && (
         <div className="h-2 w-full overflow-hidden rounded-full bg-background">
           <div
-            className={`h-full ${isOverBudget ? "bg-alert" : "bg-primary"}`}
+            className={`h-full ${
+              isOverBudget ? "bg-alert" : isNearLimit ? "bg-accent" : "bg-primary"
+            }`}
             style={{ width: `${percentage}%` }}
           />
         </div>

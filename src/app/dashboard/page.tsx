@@ -2,12 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
+import { computeBudgetAlerts } from "@/lib/budget-status";
 import {
   getTransactionsForUserSince,
   startOfCurrentMonth,
   sumExpensesByCategory,
   sumIncomeByCategory,
 } from "@/lib/transactions";
+import { BudgetAlertBanner } from "./budget-alert-banner";
 import { EvolutionSection } from "./evolution-section";
 
 const EVOLUTION_LOOKBACK_YEARS = 5;
@@ -82,6 +84,15 @@ export default async function DashboardPage() {
     )
     .sort((a, b) => b[1].received - a[1].received);
 
+  const budgetAlerts = computeBudgetAlerts(
+    [...spentByCategory.entries()].map(([categoryId, spentAmount]) => ({
+      categoryId,
+      categoryName: categoryNameById.get(categoryId) ?? "",
+      spentAmount,
+      limitAmount: budgetByCategory.get(categoryId),
+    }))
+  );
+
   return (
     <div className="flex flex-1 flex-col px-4 py-16">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
@@ -127,6 +138,8 @@ export default async function DashboardPage() {
             Orçamento
           </Link>
         </div>
+
+        <BudgetAlertBanner alerts={budgetAlerts} />
 
         <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
           <p className="text-sm text-text-secondary">Saldo do mês</p>
