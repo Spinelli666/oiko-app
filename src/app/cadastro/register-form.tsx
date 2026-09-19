@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { submitFormOnEnter } from "@/lib/forms";
 import { registerAction } from "./actions";
 
 export function RegisterForm() {
@@ -22,6 +23,7 @@ export function RegisterForm() {
           type="text"
           required
           autoComplete="name"
+          onKeyDown={submitFormOnEnter}
           className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
         />
       </div>
@@ -36,6 +38,7 @@ export function RegisterForm() {
           type="email"
           required
           autoComplete="email"
+          onKeyDown={submitFormOnEnter}
           className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
         />
       </div>
@@ -51,6 +54,7 @@ export function RegisterForm() {
           required
           minLength={8}
           autoComplete="new-password"
+          onKeyDown={submitFormOnEnter}
           className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
         />
         <span className="text-xs text-text-secondary">Mínimo 8 caracteres.</span>

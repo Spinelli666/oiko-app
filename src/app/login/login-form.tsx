@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { submitFormOnEnter } from "@/lib/forms";
 import { loginAction } from "./actions";
 
 export function LoginForm() {
@@ -24,6 +25,7 @@ export function LoginForm() {
           type="email"
           required
           autoComplete="email"
+          onKeyDown={submitFormOnEnter}
           className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
         />
       </div>
@@ -38,6 +40,7 @@ export function LoginForm() {
           type="password"
           required
           autoComplete="current-password"
+          onKeyDown={submitFormOnEnter}
           className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
         />
       </div>
