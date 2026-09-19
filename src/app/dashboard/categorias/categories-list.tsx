@@ -45,48 +45,50 @@ export function CategoriesList({
         />
       </div>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <h2 className="mb-3 text-lg font-semibold">Receitas</h2>
-        {filteredReceitas.length === 0 ? (
-          <p className="text-text-secondary">
-            {receitas.length === 0
-              ? "Nenhuma categoria de receita ainda."
-              : "Nenhuma categoria encontrada."}
-          </p>
-        ) : (
-          <ul>
-            {filteredReceitas.map((category) => (
-              <CategoryGroup
-                key={category.id}
-                category={category}
-                transactionCounts={transactionCounts}
-                reassignOptionsByCategory={reassignOptionsByCategory}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
+          <h2 className="mb-3 text-lg font-semibold">Receitas</h2>
+          {filteredReceitas.length === 0 ? (
+            <p className="text-text-secondary">
+              {receitas.length === 0
+                ? "Nenhuma categoria de receita ainda."
+                : "Nenhuma categoria encontrada."}
+            </p>
+          ) : (
+            <ul>
+              {filteredReceitas.map((category) => (
+                <CategoryGroup
+                  key={category.id}
+                  category={category}
+                  transactionCounts={transactionCounts}
+                  reassignOptionsByCategory={reassignOptionsByCategory}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <h2 className="mb-3 text-lg font-semibold">Despesas</h2>
-        {filteredDespesas.length === 0 ? (
-          <p className="text-text-secondary">
-            {despesas.length === 0
-              ? "Nenhuma categoria de despesa ainda."
-              : "Nenhuma categoria encontrada."}
-          </p>
-        ) : (
-          <ul>
-            {filteredDespesas.map((category) => (
-              <CategoryGroup
-                key={category.id}
-                category={category}
-                transactionCounts={transactionCounts}
-                reassignOptionsByCategory={reassignOptionsByCategory}
-              />
-            ))}
-          </ul>
-        )}
+        <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
+          <h2 className="mb-3 text-lg font-semibold">Despesas</h2>
+          {filteredDespesas.length === 0 ? (
+            <p className="text-text-secondary">
+              {despesas.length === 0
+                ? "Nenhuma categoria de despesa ainda."
+                : "Nenhuma categoria encontrada."}
+            </p>
+          ) : (
+            <ul>
+              {filteredDespesas.map((category) => (
+                <CategoryGroup
+                  key={category.id}
+                  category={category}
+                  transactionCounts={transactionCounts}
+                  reassignOptionsByCategory={reassignOptionsByCategory}
+                />
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </>
   );

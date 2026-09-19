@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
+import { Dialog } from "@/components/dialog";
 import { deleteCategoryAction, updateCategoryAction } from "./actions";
 import {
   CATEGORY_KIND_LABELS,
@@ -54,70 +55,6 @@ export function CategoryRow({
   );
 
   const rowPadding = isSubcategory ? "py-2 pl-8" : "py-3";
-
-  if (isEditing) {
-    return (
-      <li className={`flex flex-col gap-2 border-b border-text-secondary/10 ${rowPadding}`}>
-        <form
-          action={editFormAction}
-          className="flex flex-col gap-2 sm:flex-row sm:items-center"
-        >
-          <input type="hidden" name="id" value={category.id} />
-          <input
-            name="name"
-            type="text"
-            required
-            defaultValue={category.name}
-            className="flex-1 rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 outline-none focus:border-primary"
-          />
-          {isSubcategory ? (
-            <input type="hidden" name="kind" value={category.kind} />
-          ) : (
-            <select
-              name="kind"
-              defaultValue={category.kind}
-              className="rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 outline-none focus:border-primary"
-            >
-              <option value="DESPESA">Despesa</option>
-              <option value="RECEITA">Receita</option>
-            </select>
-          )}
-          <select
-            name="type"
-            defaultValue={category.type}
-            className="rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 outline-none focus:border-primary"
-          >
-            {CATEGORY_TYPE_OPTIONS.map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <div className="flex gap-2">
-            <button
-              type="submit"
-              disabled={isEditPending}
-              className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
-            >
-              Salvar
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsEditing(false)}
-              className="rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
-        {editState?.error && (
-          <p className="text-sm text-alert" role="alert">
-            {editState.error}
-          </p>
-        )}
-      </li>
-    );
-  }
 
   return (
     <li className={`flex flex-col gap-2 border-b border-text-secondary/10 ${rowPadding}`}>
@@ -214,6 +151,96 @@ export function CategoryRow({
             </p>
           )}
         </div>
+      )}
+
+      {isEditing && (
+        <Dialog onClose={() => setIsEditing(false)}>
+          <h2 className="mb-4 text-lg font-semibold">Editar categoria</h2>
+          <form action={editFormAction} className="flex flex-col gap-3">
+            <input type="hidden" name="id" value={category.id} />
+
+            <div className="flex flex-col gap-1">
+              <label htmlFor={`name-${category.id}`} className="text-sm font-medium">
+                Nome
+              </label>
+              <input
+                id={`name-${category.id}`}
+                name="name"
+                type="text"
+                required
+                defaultValue={category.name}
+                className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <label htmlFor={`kind-${category.id}`} className="text-sm font-medium">
+                  Tipo
+                </label>
+                {isSubcategory ? (
+                  <>
+                    <input type="hidden" name="kind" value={category.kind} />
+                    <p className="rounded-md border border-text-secondary/20 bg-background px-3 py-2 text-sm text-text-secondary">
+                      {CATEGORY_KIND_LABELS[category.kind]}
+                    </p>
+                  </>
+                ) : (
+                  <select
+                    id={`kind-${category.id}`}
+                    name="kind"
+                    defaultValue={category.kind}
+                    className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
+                  >
+                    <option value="DESPESA">Despesa</option>
+                    <option value="RECEITA">Receita</option>
+                  </select>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label htmlFor={`type-${category.id}`} className="text-sm font-medium">
+                  Classificação
+                </label>
+                <select
+                  id={`type-${category.id}`}
+                  name="type"
+                  defaultValue={category.type}
+                  className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
+                >
+                  {CATEGORY_TYPE_OPTIONS.map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {editState?.error && (
+              <p className="text-sm text-alert" role="alert">
+                {editState.error}
+              </p>
+            )}
+
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={isEditPending}
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              >
+                {isEditPending ? "Salvando..." : "Salvar"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </Dialog>
       )}
     </li>
   );
