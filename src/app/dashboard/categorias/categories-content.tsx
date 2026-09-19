@@ -6,7 +6,7 @@ import {
   getTransactionCountsByCategory,
 } from "@/lib/categories";
 import { AddCategoryForm } from "./add-category-form";
-import { CategoryGroup } from "./category-group";
+import { CategoriesList } from "./categories-list";
 
 export async function CategoriesContent() {
   const session = await auth();
@@ -43,41 +43,12 @@ export async function CategoriesContent() {
         <AddCategoryForm />
       </div>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <h2 className="mb-3 text-lg font-semibold">Receitas</h2>
-        {receitas.length === 0 ? (
-          <p className="text-text-secondary">Nenhuma categoria de receita ainda.</p>
-        ) : (
-          <ul>
-            {receitas.map((category) => (
-              <CategoryGroup
-                key={category.id}
-                category={category}
-                transactionCounts={transactionCounts}
-                reassignOptionsByCategory={reassignOptionsByCategory}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <h2 className="mb-3 text-lg font-semibold">Despesas</h2>
-        {despesas.length === 0 ? (
-          <p className="text-text-secondary">Nenhuma categoria de despesa ainda.</p>
-        ) : (
-          <ul>
-            {despesas.map((category) => (
-              <CategoryGroup
-                key={category.id}
-                category={category}
-                transactionCounts={transactionCounts}
-                reassignOptionsByCategory={reassignOptionsByCategory}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
+      <CategoriesList
+        receitas={receitas}
+        despesas={despesas}
+        transactionCounts={transactionCounts}
+        reassignOptionsByCategory={reassignOptionsByCategory}
+      />
     </div>
   );
 }

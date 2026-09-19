@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { getCategoriesForUser } from "@/lib/categories";
 import { getTransactionsForUser } from "@/lib/transactions";
-import { BudgetRow } from "./budget-row";
+import { OrcamentoList } from "./orcamento-list";
 
 export async function OrcamentoContent() {
   const session = await auth();
@@ -48,28 +48,21 @@ export async function OrcamentoContent() {
     spentByCategory.set(transaction.categoryId, current - amount);
   }
 
+  const rows = expenseCategories.map((category) => {
+    const budget = budgetByCategory.get(category.id);
+    return {
+      category,
+      budgetId: budget?.id,
+      limitAmount: budget ? Number(budget.limitAmount) : undefined,
+      spentAmount: spentByCategory.get(category.id) ?? 0,
+    };
+  });
+
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold">Orçamento do mês</h1>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <ul className="flex flex-col gap-4">
-          {expenseCategories.map((category) => {
-            const budget = budgetByCategory.get(category.id);
-            return (
-              <BudgetRow
-                key={category.id}
-                category={category}
-                budgetId={budget?.id}
-                limitAmount={
-                  budget ? Number(budget.limitAmount) : undefined
-                }
-                spentAmount={spentByCategory.get(category.id) ?? 0}
-              />
-            );
-          })}
-        </ul>
-      </div>
+      <OrcamentoList rows={rows} />
     </div>
   );
 }
