@@ -13,7 +13,7 @@ Passos 1 e 2 do roadmap concluídos; Passo 4 (telas da V1) com todas as telas es
 - [x] Banco Postgres rodando localmente via Docker ([docker-compose.yml](docker-compose.yml)) — Neon ainda não configurado, mas a troca é só mudar a `DATABASE_URL` (ver [Stack](#stack))
 - [x] Migration inicial aplicada (`prisma/migrations/`) e client do Prisma gerado (`src/generated/prisma`, via driver adapter `@prisma/adapter-pg` — obrigatório no Prisma 7)
 - [x] Autenticação por e-mail/senha com [NextAuth (Auth.js v5)](https://authjs.dev): registro (hash de senha com bcrypt) e login via Credentials provider com sessão JWT ([src/auth.ts](src/auth.ts))
-- [x] Telas: landing ([/](src/app/page.tsx)), [login](src/app/login/page.tsx), [cadastro](src/app/cadastro/page.tsx), [dashboard](src/app/dashboard/page.tsx) (saldo do mês, gastos por categoria e comparação com orçamento), [categorias](src/app/dashboard/categorias/page.tsx), [transações](src/app/dashboard/transacoes/page.tsx) e [orçamento mensal](src/app/dashboard/orcamento/page.tsx) — todas isoladas por usuário; transações abre como modal a partir do dashboard (Parallel/Intercepting Routes), categorias e orçamento sempre como página cheia; categorias e orçamento têm barra de pesquisa por nome
+- [x] Telas: landing ([/](src/app/page.tsx)), [login](src/app/login/page.tsx), [cadastro](src/app/cadastro/page.tsx), [dashboard](src/app/dashboard/page.tsx) (saldo do mês, gráfico de evolução e receitas/despesas por categoria lado a lado, comparação com orçamento), [categorias](src/app/dashboard/categorias/page.tsx), [transações](src/app/dashboard/transacoes/page.tsx) e [orçamento mensal](src/app/dashboard/orcamento/page.tsx) — todas isoladas por usuário; transações abre como modal a partir do dashboard (Parallel/Intercepting Routes), categorias e orçamento sempre como página cheia; categorias e orçamento têm barra de pesquisa por nome
 - [x] Categoria já define se é Receita ou Despesa (`Category.kind`) — o sinal do valor da transação é derivado da categoria escolhida, não perguntado de novo na hora de lançar
 - [x] Orçamento mensal por categoria de despesa, com barra de progresso e alerta visual quando o gasto ultrapassa o limite
 - [x] Proteção de rota: [src/proxy.ts](src/proxy.ts) redireciona `/dashboard` para `/login` quando não há sessão (arquivo `proxy.ts`, não `middleware.ts` — renomeado no Next.js 16)
@@ -23,8 +23,18 @@ Passos 1 e 2 do roadmap concluídos; Passo 4 (telas da V1) com todas as telas es
 - [x] Subcategorias: cada categoria de nível principal pode ter subcategorias (`Category.parentId`), que herdam a receita/despesa da categoria pai; tela de [categorias](src/app/dashboard/categorias/page.tsx) mostra receitas e despesas em seções separadas, cada uma com suas subcategorias aninhadas
 - [x] Exclusão de categoria/subcategoria com transações: se houver transações lançadas nela, o usuário escolhe para qual outra categoria (do mesmo tipo receita/despesa) elas devem ser movidas antes da exclusão; categorias com subcategorias não podem ser excluídas até as subcategorias serem removidas ou movidas
 - [x] Filtro por categoria no histórico de transações ([transactions-list.tsx](src/app/dashboard/transacoes/transactions-list.tsx))
-- [ ] Testar com um mês real de dados (critério de "V1 pronta", segundo o planejamento)
-- [ ] Deploy em produção (Vercel + Neon)
+- [x] Testes automatizados com [Vitest](https://vitest.dev) ([vitest.config.ts](vitest.config.ts)): cálculo de orçamento ([budget-status.test.ts](src/lib/budget-status.test.ts)), soma de despesas por categoria e parsing de mês ([transactions.test.ts](src/lib/transactions.test.ts)) e, principalmente, isolamento entre usuários ([isolation.test.ts](src/lib/isolation.test.ts)) — roda contra o banco local de verdade, criando e limpando usuários de teste a cada execução
+- [ ] Testar com um mês real de dados (critério de "V1 pronta", segundo o planejamento) — em andamento
+- [ ] Deploy em produção (Vercel + Neon) — adiado por enquanto
+
+### V2 (em andamento)
+
+- [x] Gráficos de evolução: no [dashboard](src/app/dashboard/page.tsx), acima de "Receitas/Despesas por categoria" — receitas, despesas e saldo dos últimos 6 meses (barras + linha, [recharts](https://recharts.org)); agregação mês a mês em [evolution.ts](src/lib/evolution.ts) (testada em [evolution.test.ts](src/lib/evolution.test.ts))
+- [ ] Alertas de orçamento (ex: aviso ao atingir 90% do limite)
+- [ ] Transações recorrentes
+- [ ] Contas a pagar
+- [ ] Importação de extratos (CSV/OFX)
+- [ ] Metas financeiras
 
 ## Stack
 
@@ -50,3 +60,11 @@ npm run dev
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+### Testes
+
+```bash
+npm run test
+```
+
+Os testes de isolamento entre usuários ([isolation.test.ts](src/lib/isolation.test.ts)) usam o banco Postgres local (o mesmo do `docker compose up -d`) — precisa estar rodando.

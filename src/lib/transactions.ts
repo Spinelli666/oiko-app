@@ -40,6 +40,21 @@ export function sumExpensesByCategory(
   return result;
 }
 
+/** Sums receita transactions (positive amounts) per category. Despesa
+ * transactions (negative amounts) and zero-amount transactions aren't
+ * counted as income. */
+export function sumIncomeByCategory(
+  transactions: Array<{ categoryId: string; amount: number }>
+): Map<string, number> {
+  const result = new Map<string, number>();
+  for (const transaction of transactions) {
+    if (transaction.amount <= 0) continue;
+    const current = result.get(transaction.categoryId) ?? 0;
+    result.set(transaction.categoryId, current + transaction.amount);
+  }
+  return result;
+}
+
 function monthRange(monthReference: Date) {
   const end = new Date(
     Date.UTC(
@@ -66,6 +81,7 @@ export function getTransactionsForUser(
 export function getTransactionsForUserSince(userId: string, since: Date) {
   return prisma.transaction.findMany({
     where: { userId, date: { gte: since } },
+    include: { category: true },
     orderBy: { date: "asc" },
   });
 }

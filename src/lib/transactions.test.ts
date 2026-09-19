@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { parseMonthReference, sumExpensesByCategory } from "./transactions";
+import {
+  parseMonthReference,
+  sumExpensesByCategory,
+  sumIncomeByCategory,
+} from "./transactions";
 
 describe("sumExpensesByCategory", () => {
   it("soma só as despesas (valores negativos), agrupadas por categoria", () => {
@@ -32,6 +36,34 @@ describe("sumExpensesByCategory", () => {
   it("retorna um mapa vazio quando não há transações", () => {
     const result = sumExpensesByCategory([]);
     expect(result.size).toBe(0);
+  });
+});
+
+describe("sumIncomeByCategory", () => {
+  it("soma só as receitas (valores positivos), agrupadas por categoria", () => {
+    const result = sumIncomeByCategory([
+      { categoryId: "salario", amount: 3000 },
+      { categoryId: "salario", amount: 500 },
+      { categoryId: "outras-receitas", amount: 100 },
+    ]);
+
+    expect(result.get("salario")).toBe(3500);
+    expect(result.get("outras-receitas")).toBe(100);
+  });
+
+  it("ignora despesas (valores negativos)", () => {
+    const result = sumIncomeByCategory([
+      { categoryId: "alimentacao", amount: -50 },
+      { categoryId: "salario", amount: 3000 },
+    ]);
+
+    expect(result.has("alimentacao")).toBe(false);
+    expect(result.get("salario")).toBe(3000);
+  });
+
+  it("ignora transações de valor zero", () => {
+    const result = sumIncomeByCategory([{ categoryId: "salario", amount: 0 }]);
+    expect(result.has("salario")).toBe(false);
   });
 });
 
