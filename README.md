@@ -29,7 +29,7 @@ Passos 1 e 2 do roadmap concluídos; Passo 4 (telas da V1) com todas as telas es
 
 ### V2 (em andamento)
 
-- [x] Gráficos de evolução: no [dashboard](src/app/dashboard/page.tsx), acima de "Receitas/Despesas por categoria" — receitas, despesas e saldo (barras + linha, [recharts](https://recharts.org)), com filtro de granularidade **Semanal / Mensal / Anual** e um período **De/Até** customizável ([evolution-section.tsx](src/app/dashboard/evolution-section.tsx)); agregação por semana/mês/ano em [evolution.ts](src/lib/evolution.ts) (testada em [evolution.test.ts](src/lib/evolution.test.ts)) — tudo filtrado no navegador, sem recarregar a página
+- [x] Gráficos de evolução: no [dashboard](src/app/dashboard/page.tsx), acima de "Receitas/Despesas por categoria" — receitas, despesas e saldo (barras + linha, [recharts](https://recharts.org)), com filtro de granularidade **Diário / Semanal / Mensal / Anual** e um período **De/Até** customizável ([evolution-section.tsx](src/app/dashboard/evolution-section.tsx)); agregação por dia/semana/mês/ano em [evolution.ts](src/lib/evolution.ts) (testada em [evolution.test.ts](src/lib/evolution.test.ts)) — tudo filtrado no navegador, sem recarregar a página
 - [ ] Alertas de orçamento (ex: aviso ao atingir 90% do limite)
 - [ ] Transações recorrentes
 - [ ] Contas a pagar

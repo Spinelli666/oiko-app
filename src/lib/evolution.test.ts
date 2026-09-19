@@ -7,6 +7,13 @@ import {
 } from "./evolution";
 
 describe("bucketStart", () => {
+  it("diario: volta pra meia-noite (UTC) daquele dia", () => {
+    const date = new Date(Date.UTC(2026, 8, 16, 14, 30));
+    expect(bucketStart(date, "diario").toISOString()).toBe(
+      "2026-09-16T00:00:00.000Z"
+    );
+  });
+
   it("semanal: volta pra segunda-feira daquela semana", () => {
     const wednesday = new Date(Date.UTC(2026, 8, 16)); // quarta, 16/09/2026
     expect(bucketStart(wednesday, "semanal").toISOString()).toBe(
@@ -37,6 +44,19 @@ describe("bucketStart", () => {
 });
 
 describe("bucketsInRange", () => {
+  it("gera os buckets diários entre duas datas", () => {
+    const from = new Date(Date.UTC(2026, 8, 16));
+    const to = new Date(Date.UTC(2026, 8, 19));
+    const buckets = bucketsInRange(from, to, "diario");
+
+    expect(buckets.map((b) => b.toISOString())).toEqual([
+      "2026-09-16T00:00:00.000Z",
+      "2026-09-17T00:00:00.000Z",
+      "2026-09-18T00:00:00.000Z",
+      "2026-09-19T00:00:00.000Z",
+    ]);
+  });
+
   it("gera os buckets semanais entre duas datas, do mais antigo pro mais recente", () => {
     const from = new Date(Date.UTC(2026, 8, 1));
     const to = new Date(Date.UTC(2026, 8, 20));
@@ -112,6 +132,21 @@ describe("computeEvolution", () => {
     ]);
   });
 
+  it("agrega corretamente no modo diário", () => {
+    const buckets = [new Date(Date.UTC(2026, 8, 16))];
+    const transactions = [
+      { date: new Date(Date.UTC(2026, 8, 16, 9)), amount: -30 },
+      { date: new Date(Date.UTC(2026, 8, 16, 20)), amount: 100 },
+      { date: new Date(Date.UTC(2026, 8, 17)), amount: -50 }, // dia seguinte, fora
+    ];
+
+    const result = computeEvolution(transactions, buckets, "diario");
+
+    expect(result).toEqual([
+      { bucketStart: buckets[0], receitas: 100, despesas: 30, saldo: 70 },
+    ]);
+  });
+
   it("agrega corretamente no modo semanal", () => {
     const buckets = [new Date(Date.UTC(2026, 8, 14))]; // segunda 14/09
     const transactions = [
@@ -128,6 +163,14 @@ describe("computeEvolution", () => {
 });
 
 describe("defaultRangeFor", () => {
+  it("diario: últimos 14 dias terminando hoje", () => {
+    const reference = new Date(Date.UTC(2026, 8, 19));
+    const { from, to } = defaultRangeFor("diario", reference);
+
+    expect(from.toISOString()).toBe("2026-09-06T00:00:00.000Z");
+    expect(to).toBe(reference);
+  });
+
   it("mensal: últimos 6 meses terminando hoje", () => {
     const reference = new Date(Date.UTC(2026, 8, 19));
     const { from, to } = defaultRangeFor("mensal", reference);

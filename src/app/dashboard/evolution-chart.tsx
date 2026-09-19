@@ -32,8 +32,9 @@ const YEAR_LABEL_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
 
 function formatBucketLabel(date: Date, granularity: Granularity) {
   switch (granularity) {
+    case "diario":
     case "semanal":
-      return WEEK_LABEL_FORMATTER.format(date);
+      return DAY_LABEL_FORMATTER.format(date);
     case "mensal":
       return MONTH_LABEL_FORMATTER.format(date);
     case "anual":
