@@ -1,22 +1,25 @@
 "use client";
 
-import { useActionState, useRef } from "react";
+import { useActionState, useRef, useState } from "react";
 import { createCategoryAction } from "./actions";
 import {
+  CATEGORY_KIND_LABELS,
   CATEGORY_KIND_OPTIONS,
   CATEGORY_TYPE_OPTIONS,
 } from "./category-type-labels";
 import type { CategoryKind } from "@/generated/prisma/enums";
 
+type Mode = "categoria" | "subcategoria";
+
 export function AddCategoryForm({
-  parent,
+  topLevelCategories,
   onDone,
 }: {
-  /** When set, the form creates a subcategory locked to the parent's kind. */
-  parent?: { id: string; name: string; kind: CategoryKind };
+  topLevelCategories: Array<{ id: string; name: string; kind: CategoryKind }>;
   onDone?: () => void;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const [mode, setMode] = useState<Mode>("categoria");
   const [state, formAction, isPending] = useActionState(
     async (
       prevState: Awaited<ReturnType<typeof createCategoryAction>>,
@@ -25,6 +28,7 @@ export function AddCategoryForm({
       const result = await createCategoryAction(prevState, formData);
       if (!result?.error) {
         formRef.current?.reset();
+        setMode("categoria");
         onDone?.();
       }
       return result;
@@ -32,26 +36,51 @@ export function AddCategoryForm({
     undefined
   );
 
+  const isSubcategoria = mode === "subcategoria";
+
   return (
     <form ref={formRef} action={formAction} className="flex flex-col gap-3">
-      {parent && <input type="hidden" name="parentId" value={parent.id} />}
-      <div className={`grid gap-3 ${parent ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
+      <div className="grid gap-3 sm:grid-cols-3">
         <div className="flex flex-col gap-1">
           <label htmlFor="name" className="text-sm font-medium">
-            {parent ? `Subcategoria de ${parent.name}` : "Nova categoria"}
+            {isSubcategoria ? "Nome da subcategoria" : "Nova categoria"}
           </label>
           <input
             id="name"
             name="name"
             type="text"
             required
-            placeholder={parent ? "Ex: Supermercado" : "Ex: Alimentação"}
+            placeholder={isSubcategoria ? "Ex: Supermercado" : "Ex: Alimentação"}
             className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
           />
         </div>
 
-        {parent ? (
-          <input type="hidden" name="kind" value={parent.kind} />
+        {isSubcategoria ? (
+          <div className="flex flex-col gap-1">
+            <label htmlFor="parentId" className="text-sm font-medium">
+              Categoria pai
+            </label>
+            {/* A resolução real do kind é feita no servidor a partir da
+                categoria pai escolhida; este campo só existe pra satisfazer
+                a validação do formulário. */}
+            <input type="hidden" name="kind" value="DESPESA" />
+            <select
+              id="parentId"
+              name="parentId"
+              required
+              defaultValue=""
+              className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
+            >
+              <option value="" disabled>
+                Selecione uma categoria
+              </option>
+              {topLevelCategories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} ({CATEGORY_KIND_LABELS[c.kind]})
+                </option>
+              ))}
+            </select>
+          </div>
         ) : (
           <div className="flex flex-col gap-1">
             <label htmlFor="kind" className="text-sm font-medium">
@@ -106,7 +135,14 @@ export function AddCategoryForm({
         >
           {isPending ? "Adicionando..." : "Adicionar"}
         </button>
-        {parent && (
+        <button
+          type="button"
+          onClick={() => setMode(isSubcategoria ? "categoria" : "subcategoria")}
+          className="w-fit rounded-md border border-text-secondary/30 px-4 py-2 font-medium"
+        >
+          {isSubcategoria ? "Categoria" : "+ Subcategoria"}
+        </button>
+        {onDone && (
           <button
             type="button"
             onClick={onDone}

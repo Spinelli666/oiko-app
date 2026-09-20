@@ -9,11 +9,13 @@ export function CategoriesList({
   despesas,
   transactionCounts,
   reassignOptionsByCategory,
+  children,
 }: {
   receitas: CategoryWithChildren[];
   despesas: CategoryWithChildren[];
   transactionCounts: Map<string, number>;
   reassignOptionsByCategory: Map<string, Array<{ id: string; name: string }>>;
+  children?: React.ReactNode;
 }) {
   const [query, setQuery] = useState("");
 
@@ -44,6 +46,8 @@ export function CategoriesList({
           className="w-full rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
         />
       </div>
+
+      {children}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">

@@ -5,7 +5,7 @@ import {
   getCategoriesForUser,
   getTransactionCountsByCategory,
 } from "@/lib/categories";
-import { AddCategoryForm } from "./add-category-form";
+import { AddCategorySection } from "./add-category-section";
 import { CategoriesList } from "./categories-list";
 
 export async function CategoriesContent() {
@@ -20,6 +20,10 @@ export async function CategoriesContent() {
   ]);
 
   const { receitas, despesas } = buildCategoryTree(categories);
+
+  const topLevelCategories = categories
+    .filter((c) => !c.parentId)
+    .map((c) => ({ id: c.id, name: c.name, kind: c.kind }));
 
   const reassignOptionsByCategory = new Map(
     categories.map((category) => [
@@ -39,16 +43,14 @@ export async function CategoriesContent() {
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold">Categorias</h1>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <AddCategoryForm />
-      </div>
-
       <CategoriesList
         receitas={receitas}
         despesas={despesas}
         transactionCounts={transactionCounts}
         reassignOptionsByCategory={reassignOptionsByCategory}
-      />
+      >
+        <AddCategorySection topLevelCategories={topLevelCategories} />
+      </CategoriesList>
     </div>
   );
 }
