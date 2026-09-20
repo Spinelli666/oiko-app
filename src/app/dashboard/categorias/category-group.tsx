@@ -21,20 +21,11 @@ export function CategoryGroup({
       <CategoryRow
         category={category}
         hasChildren={hasChildren}
+        isExpanded={isExpanded}
+        onToggleExpand={() => setIsExpanded((v) => !v)}
         transactionCount={transactionCounts.get(category.id) ?? 0}
         reassignOptions={reassignOptionsByCategory.get(category.id) ?? []}
       />
-
-      {hasChildren && (
-        <button
-          type="button"
-          onClick={() => setIsExpanded((v) => !v)}
-          className="py-1 pl-8 text-sm text-primary"
-        >
-          {isExpanded ? "▾ Ocultar" : "▸ Mostrar"} {category.children.length}{" "}
-          {category.children.length === 1 ? "subcategoria" : "subcategorias"}
-        </button>
-      )}
 
       {isExpanded && (
         <ul>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="Editar">
+  <g stroke="#2c6e7f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" transform="rotate(45 24 24)">
+    <path d="M18 4 V34" />
+    <path d="M30 4 V34" />
+    <path d="M18 4 H30" />
+    <path d="M18 10 H30" />
+    <path d="M19 30 H29" />
+    <path d="M18 34 L24 42" />
+    <path d="M30 34 L24 42" />
+  </g>
+</svg>

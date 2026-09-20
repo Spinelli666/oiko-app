@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Image from "next/image";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { Dialog } from "@/components/dialog";
 import { deleteCategoryAction, updateCategoryAction } from "./actions";
@@ -14,12 +15,16 @@ export function CategoryRow({
   category,
   isSubcategory = false,
   hasChildren = false,
+  isExpanded = false,
+  onToggleExpand,
   transactionCount,
   reassignOptions,
 }: {
   category: CategoryModel;
   isSubcategory?: boolean;
   hasChildren?: boolean;
+  isExpanded?: boolean;
+  onToggleExpand?: () => void;
   transactionCount: number;
   reassignOptions: Array<{ id: string; name: string }>;
 }) {
@@ -73,14 +78,25 @@ export function CategoryRow({
           </p>
         </div>
         <div className="flex gap-2">
+          {hasChildren && onToggleExpand && (
+            <button
+              type="button"
+              onClick={onToggleExpand}
+              aria-label={isExpanded ? "Ocultar subcategorias" : "Mostrar subcategorias"}
+              title={isExpanded ? "Ocultar subcategorias" : "Mostrar subcategorias"}
+              className="rounded-md border border-text-secondary/30 px-2.5 py-1.5 text-sm"
+            >
+              {isExpanded ? "▾" : "▸"}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setIsEditing(true)}
             aria-label="Editar"
             title="Editar"
-            className="rounded-md border border-text-secondary/30 px-2.5 py-1.5 text-sm"
+            className="flex items-center justify-center rounded-md border border-text-secondary/30 p-2"
           >
-            ✏️
+            <Image src="/icon-edit.svg" alt="" width={16} height={16} />
           </button>
           {!category.isDefault && (
             <button
@@ -88,9 +104,9 @@ export function CategoryRow({
               onClick={() => setIsConfirmingDelete((v) => !v)}
               aria-label="Excluir"
               title="Excluir"
-              className="rounded-md border border-alert/40 px-2.5 py-1.5 text-sm"
+              className="flex items-center justify-center rounded-md border border-alert/40 p-2"
             >
-              🗑️
+              <Image src="/icon-delete.svg" alt="" width={16} height={16} />
             </button>
           )}
         </div>

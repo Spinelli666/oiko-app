@@ -1,7 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { OikoLogo } from "@/components/oiko-logo";
 
 export default async function Home() {
   const session = await auth();
@@ -11,7 +11,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 text-center">
-      <OikoLogo className="h-20 w-auto text-primary" />
+      <Image src="/logo.svg" alt="Oiko" width={350} height={120} className="h-20 w-auto" priority />
       <p className="max-w-md text-text-secondary">
         Controle de receitas, despesas e orçamento — de um jeito simples,
         evoluindo aos poucos.

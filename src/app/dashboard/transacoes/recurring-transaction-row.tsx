@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Image from "next/image";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import type { RecurringTransactionGetPayload } from "@/generated/prisma/models/RecurringTransaction";
 import {
@@ -148,9 +149,9 @@ export function RecurringTransactionRow({
           onClick={() => setIsEditing(true)}
           aria-label="Editar"
           title="Editar"
-          className="rounded-md border border-text-secondary/30 px-2.5 py-1.5 text-sm"
+          className="flex items-center justify-center rounded-md border border-text-secondary/30 p-2"
         >
-          ✏️
+          <Image src="/icon-edit.svg" alt="" width={16} height={16} />
         </button>
         <form action={toggleRecurringTransactionAction}>
           <input type="hidden" name="id" value={recurringTransaction.id} />
@@ -172,9 +173,9 @@ export function RecurringTransactionRow({
             type="submit"
             aria-label="Excluir"
             title="Excluir"
-            className="rounded-md border border-alert/40 px-2.5 py-1.5 text-sm"
+            className="flex items-center justify-center rounded-md border border-alert/40 p-2"
           >
-            🗑️
+            <Image src="/icon-delete.svg" alt="" width={16} height={16} />
           </button>
         </form>
       </div>
