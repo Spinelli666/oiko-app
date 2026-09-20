@@ -3,7 +3,6 @@
 import { useActionState, useRef } from "react";
 import { createCategoryAction } from "./actions";
 import {
-  CATEGORY_KIND_LABELS,
   CATEGORY_KIND_OPTIONS,
   CATEGORY_TYPE_OPTIONS,
 } from "./category-type-labels";
@@ -36,7 +35,7 @@ export function AddCategoryForm({
   return (
     <form ref={formRef} action={formAction} className="flex flex-col gap-3">
       {parent && <input type="hidden" name="parentId" value={parent.id} />}
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className={`grid gap-3 ${parent ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
         <div className="flex flex-col gap-1">
           <label htmlFor="name" className="text-sm font-medium">
             {parent ? `Subcategoria de ${parent.name}` : "Nova categoria"}
@@ -51,18 +50,13 @@ export function AddCategoryForm({
           />
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label htmlFor="kind" className="text-sm font-medium">
-            Tipo
-          </label>
-          {parent ? (
-            <>
-              <input type="hidden" name="kind" value={parent.kind} />
-              <p className="rounded-md border border-text-secondary/20 bg-background px-3 py-2 text-text-secondary">
-                {CATEGORY_KIND_LABELS[parent.kind]} (da categoria principal)
-              </p>
-            </>
-          ) : (
+        {parent ? (
+          <input type="hidden" name="kind" value={parent.kind} />
+        ) : (
+          <div className="flex flex-col gap-1">
+            <label htmlFor="kind" className="text-sm font-medium">
+              Tipo
+            </label>
             <select
               id="kind"
               name="kind"
@@ -76,8 +70,8 @@ export function AddCategoryForm({
                 </option>
               ))}
             </select>
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="flex flex-col gap-1">
           <label htmlFor="type" className="text-sm font-medium">
