@@ -76,7 +76,7 @@ export function EvolutionChart({
     label: formatBucketLabel(d.bucketStart, granularity),
     Receitas: d.receitas,
     Despesas: d.despesas,
-    Saldo: granularity === "diario" && d.receitas === 0 ? 0 : d.saldo,
+    Saldo: d.saldo,
   }));
 
   return (

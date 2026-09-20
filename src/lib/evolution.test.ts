@@ -117,18 +117,49 @@ describe("computeEvolution", () => {
 
     expect(result).toEqual([
       { bucketStart: buckets[0], receitas: 1000, despesas: 300, saldo: 700 },
-      { bucketStart: buckets[1], receitas: 0, despesas: 50, saldo: -50 },
+      { bucketStart: buckets[1], receitas: 0, despesas: 50, saldo: 650 },
     ]);
   });
 
-  it("ignora transações fora dos buckets informados", () => {
+  it("ignora transações depois do último bucket informado", () => {
+    const buckets = [new Date(Date.UTC(2026, 8, 1))];
+    const transactions = [{ date: new Date(Date.UTC(2026, 11, 1)), amount: 500 }];
+
+    const result = computeEvolution(transactions, buckets, "mensal");
+
+    expect(result).toEqual([
+      { bucketStart: buckets[0], receitas: 0, despesas: 0, saldo: 0 },
+    ]);
+  });
+
+  it("transações antes do primeiro bucket viram saldo inicial, ao invés de serem ignoradas", () => {
     const buckets = [new Date(Date.UTC(2026, 8, 1))];
     const transactions = [{ date: new Date(Date.UTC(2026, 5, 1)), amount: 500 }];
 
     const result = computeEvolution(transactions, buckets, "mensal");
 
     expect(result).toEqual([
-      { bucketStart: buckets[0], receitas: 0, despesas: 0, saldo: 0 },
+      { bucketStart: buckets[0], receitas: 0, despesas: 0, saldo: 500 },
+    ]);
+  });
+
+  it("mantém o saldo acumulado em buckets sem nenhuma transação, ao invés de zerar", () => {
+    const buckets = [
+      new Date(Date.UTC(2026, 8, 16)),
+      new Date(Date.UTC(2026, 8, 17)),
+      new Date(Date.UTC(2026, 8, 18)),
+    ];
+    const transactions = [
+      { date: new Date(Date.UTC(2026, 8, 16)), amount: 1000 },
+      { date: new Date(Date.UTC(2026, 8, 16)), amount: -200 },
+    ];
+
+    const result = computeEvolution(transactions, buckets, "diario");
+
+    expect(result).toEqual([
+      { bucketStart: buckets[0], receitas: 1000, despesas: 200, saldo: 800 },
+      { bucketStart: buckets[1], receitas: 0, despesas: 0, saldo: 800 },
+      { bucketStart: buckets[2], receitas: 0, despesas: 0, saldo: 800 },
     ]);
   });
 

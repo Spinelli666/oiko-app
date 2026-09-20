@@ -84,8 +84,11 @@ export function bucketsInRange(
   return buckets;
 }
 
-/** Aggregates transactions into receitas/despesas/saldo for each bucket in
- * `buckets` (in the order given). Transactions outside those buckets are
+/** Aggregates transactions into receitas/despesas for each bucket in
+ * `buckets` (in the order given), and a running `saldo` that carries the
+ * balance forward across buckets (including a baseline built from
+ * transactions before the first bucket) instead of resetting to zero on
+ * buckets with no activity. Transactions after the last bucket are
  * ignored. */
 export function computeEvolution(
   transactions: Array<{ date: Date; amount: number }>,
@@ -97,8 +100,16 @@ export function computeEvolution(
     buckets.map((b) => [key(b), { receitas: 0, despesas: 0 }])
   );
 
+  const firstBucket = buckets[0];
+  let runningSaldo = 0;
+
   for (const transaction of transactions) {
-    const bucket = totals.get(key(bucketStart(transaction.date, granularity)));
+    const transactionBucket = bucketStart(transaction.date, granularity);
+    if (firstBucket && transactionBucket.getTime() < firstBucket.getTime()) {
+      runningSaldo += transaction.amount;
+      continue;
+    }
+    const bucket = totals.get(key(transactionBucket));
     if (!bucket) continue;
     if (transaction.amount >= 0) {
       bucket.receitas += transaction.amount;
@@ -109,11 +120,12 @@ export function computeEvolution(
 
   return buckets.map((start) => {
     const bucket = totals.get(key(start))!;
+    runningSaldo += bucket.receitas - bucket.despesas;
     return {
       bucketStart: start,
       receitas: bucket.receitas,
       despesas: bucket.despesas,
-      saldo: bucket.receitas - bucket.despesas,
+      saldo: runningSaldo,
     };
   });
 }
