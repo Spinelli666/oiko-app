@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { computeBudgetAlerts } from "@/lib/budget-status";
+import { ensureRecurringTransactionsGenerated } from "@/lib/recurring-transactions";
 import {
   getTransactionsForUserSince,
   startOfCurrentMonth,
@@ -34,6 +35,8 @@ export default async function DashboardPage() {
   if (!session?.user) {
     redirect("/login");
   }
+
+  await ensureRecurringTransactionsGenerated(session.user.id);
 
   const [allTransactions, budgets] = await Promise.all([
     getTransactionsForUserSince(session.user.id, evolutionLookbackStart()),

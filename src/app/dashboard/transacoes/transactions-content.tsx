@@ -2,9 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getCategoriesForUser } from "@/lib/categories";
+import {
+  ensureRecurringTransactionsGenerated,
+  getRecurringTransactionsForUser,
+} from "@/lib/recurring-transactions";
 import { getTransactionsForUser, startOfCurrentMonth } from "@/lib/transactions";
-import { AddTransactionForm } from "./add-transaction-form";
 import { MonthNav } from "./month-nav";
+import { TransactionFormTabs } from "./transaction-form-tabs";
 import { TransactionsList } from "./transactions-list";
 
 export async function TransactionsContent({
@@ -21,9 +25,12 @@ export async function TransactionsContent({
 
   const effectiveMonth = monthReference ?? startOfCurrentMonth();
 
-  const [categories, transactions] = await Promise.all([
+  await ensureRecurringTransactionsGenerated(session.user.id);
+
+  const [categories, transactions, recurringTransactions] = await Promise.all([
     getCategoriesForUser(session.user.id),
     getTransactionsForUser(session.user.id, effectiveMonth),
+    getRecurringTransactionsForUser(session.user.id),
   ]);
 
   if (categories.length === 0) {
@@ -51,9 +58,14 @@ export async function TransactionsContent({
         {withMonthNav && <MonthNav monthReference={effectiveMonth} />}
       </div>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <AddTransactionForm categories={categories} monthReference={effectiveMonth} />
-      </div>
+      <TransactionFormTabs
+        categories={categories}
+        monthReference={effectiveMonth}
+        recurringTransactions={recurringTransactions.map((rt) => ({
+          ...rt,
+          amount: Number(rt.amount),
+        }))}
+      />
 
       <TransactionsList
         transactions={transactions.map((transaction) => ({

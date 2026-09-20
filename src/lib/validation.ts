@@ -25,6 +25,15 @@ export const TransactionSchema = z.object({
   date: z.iso.date({ error: "Data inválida." }),
 });
 
+export const RecurringTransactionSchema = z.object({
+  categoryId: z.string().min(1, { error: "Selecione uma categoria." }),
+  description: z.string().trim().min(1, { error: "Descrição obrigatória." }),
+  amount: z.coerce
+    .number({ error: "Informe um valor." })
+    .positive({ error: "O valor precisa ser maior que zero." }),
+  startDate: z.iso.date({ error: "Data inválida." }),
+});
+
 export const BudgetSchema = z.object({
   categoryId: z.string().min(1, { error: "Categoria inválida." }),
   limitAmount: z.coerce

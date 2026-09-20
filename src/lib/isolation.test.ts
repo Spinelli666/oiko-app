@@ -20,6 +20,13 @@ import {
   removeBudget,
   setBudget,
 } from "@/lib/budgets";
+import {
+  RecurringTransactionNotFoundError,
+  createRecurringTransaction,
+  deleteRecurringTransaction,
+  getRecurringTransactionsForUser,
+  updateRecurringTransaction,
+} from "@/lib/recurring-transactions";
 
 /** Integration tests hitting the real (local) database — this is the most
  * important suite per the project plan: a user must never be able to read,
@@ -233,5 +240,89 @@ describe("isolamento entre usuários", () => {
       where: { id: budgetA.id },
     });
     expect(stillThere).not.toBeNull();
+  });
+
+  it("usuário B não vê transações recorrentes do usuário A na listagem", async () => {
+    const categoryA = await createCategory({
+      userId: userAId,
+      name: "Categoria A - recorrente listagem",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+    const recurringA = await createRecurringTransaction({
+      userId: userAId,
+      categoryId: categoryA.id,
+      description: "Aluguel do usuário A",
+      amount: 1200,
+      startDate: startOfCurrentMonth(),
+    });
+
+    const recurringForB = await getRecurringTransactionsForUser(userBId);
+
+    expect(
+      recurringForB.find((rt) => rt.id === recurringA.id)
+    ).toBeUndefined();
+  });
+
+  it("usuário B não consegue editar nem excluir uma transação recorrente do usuário A", async () => {
+    const categoryA = await createCategory({
+      userId: userAId,
+      name: "Categoria A - editar recorrente",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+    const categoryB = await createCategory({
+      userId: userBId,
+      name: "Categoria B - editar recorrente",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+    const recurringA = await createRecurringTransaction({
+      userId: userAId,
+      categoryId: categoryA.id,
+      description: "Recorrência original",
+      amount: 100,
+      startDate: startOfCurrentMonth(),
+    });
+
+    await expect(
+      updateRecurringTransaction({
+        id: recurringA.id,
+        userId: userBId,
+        categoryId: categoryB.id,
+        description: "Sequestrada",
+        amount: 999,
+        startDate: startOfCurrentMonth(),
+      })
+    ).rejects.toBeInstanceOf(RecurringTransactionNotFoundError);
+
+    await expect(
+      deleteRecurringTransaction({ id: recurringA.id, userId: userBId })
+    ).rejects.toBeInstanceOf(RecurringTransactionNotFoundError);
+
+    const stillThere = await prisma.recurringTransaction.findUnique({
+      where: { id: recurringA.id },
+    });
+    expect(stillThere).not.toBeNull();
+    expect(stillThere?.description).toBe("Recorrência original");
+  });
+
+  it("usuário B não consegue cadastrar uma transação recorrente usando uma categoria do usuário A", async () => {
+    const categoryA = await createCategory({
+      userId: userAId,
+      name: "Categoria A - roubo recorrente",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+
+    await expect(
+      createRecurringTransaction({
+        userId: userBId,
+        categoryId: categoryA.id,
+        description: "Tentativa do usuário B",
+        amount: 10,
+        startDate: startOfCurrentMonth(),
+      })
+    ).rejects.toBeInstanceOf(CategoryNotFoundError);
   });
 });

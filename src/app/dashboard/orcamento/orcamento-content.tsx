@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { getCategoriesForUser } from "@/lib/categories";
+import { ensureRecurringTransactionsGenerated } from "@/lib/recurring-transactions";
 import { getTransactionsForUser, sumExpensesByCategory } from "@/lib/transactions";
 import { OrcamentoList } from "./orcamento-list";
 
@@ -11,6 +12,8 @@ export async function OrcamentoContent() {
   if (!session?.user?.id) {
     redirect("/login");
   }
+
+  await ensureRecurringTransactionsGenerated(session.user.id);
 
   const [categories, budgets, transactions] = await Promise.all([
     getCategoriesForUser(session.user.id),
