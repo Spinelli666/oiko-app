@@ -69,7 +69,6 @@ export function CategoryRow({
             )}
           </p>
           <p className="text-sm text-text-secondary">
-            {CATEGORY_KIND_LABELS[category.kind]} ·{" "}
             {CATEGORY_TYPE_LABELS[category.type]}
           </p>
         </div>
@@ -77,17 +76,21 @@ export function CategoryRow({
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
+            aria-label="Editar"
+            title="Editar"
+            className="rounded-md border border-text-secondary/30 px-2.5 py-1.5 text-sm"
           >
-            Editar
+            ✏️
           </button>
           {!category.isDefault && (
             <button
               type="button"
               onClick={() => setIsConfirmingDelete((v) => !v)}
-              className="rounded-md border border-alert/40 px-3 py-1.5 text-sm font-medium text-alert"
+              aria-label="Excluir"
+              title="Excluir"
+              className="rounded-md border border-alert/40 px-2.5 py-1.5 text-sm"
             >
-              Excluir
+              🗑️
             </button>
           )}
         </div>

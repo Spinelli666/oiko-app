@@ -98,7 +98,7 @@ export function AddCategoryForm({
         </p>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex justify-center gap-2">
         <button
           type="submit"
           disabled={isPending}
