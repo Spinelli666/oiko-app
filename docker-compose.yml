@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: oiko
+      POSTGRES_PASSWORD: oiko
+      POSTGRES_DB: oiko
+    ports:
+      - "5432:5432"
+    volumes:
+      - oiko_pgdata:/var/lib/postgresql/data
+
+volumes:
+  oiko_pgdata:

@@ -1,0 +1,82 @@
+import type { SVGProps } from "react";
+
+export function OikoLogo(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 350 120"
+      fill="none"
+      role="img"
+      aria-label="Oiko"
+      {...props}
+    >
+      <g
+        stroke="currentColor"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+      >
+        <path d="M12 31 L80 8 L148 31" />
+        <path d="M18 31 L80 13 L142 31" />
+        <path d="M10 32 H150" />
+        <path d="M14 37 H146" />
+        <path d="M17 43 H143" />
+        <path d="M20 48 H140" />
+
+        <path d="M25 53 H39" />
+        <path d="M28 57 H36" />
+        <path d="M32 57 V91" />
+        <path d="M27 94 H37" />
+
+        <path d="M45 53 H59" />
+        <path d="M48 57 H56" />
+        <path d="M52 57 V91" />
+        <path d="M47 94 H57" />
+
+        <path d="M65 53 H79" />
+        <path d="M68 57 H76" />
+        <path d="M72 57 V91" />
+        <path d="M67 94 H77" />
+
+        <path d="M81 53 H95" />
+        <path d="M84 57 H92" />
+        <path d="M88 57 V91" />
+        <path d="M83 94 H93" />
+
+        <path d="M101 53 H115" />
+        <path d="M104 57 H112" />
+        <path d="M108 57 V91" />
+        <path d="M103 94 H113" />
+
+        <path d="M121 53 H135" />
+        <path d="M124 57 H132" />
+        <path d="M128 57 V91" />
+        <path d="M123 94 H133" />
+
+        <path d="M20 98 H140" />
+        <path d="M16 104 H144" />
+        <path d="M12 110 H148" />
+      </g>
+
+      <g
+        stroke="currentColor"
+        strokeWidth={5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+      >
+        <circle cx={194} cy={64} r={16} />
+
+        <path d="M228 53 V80" />
+        <circle cx={228} cy={42} r={2} />
+
+        <path d="M252 42 V80" />
+        <path d="M252 64 L269 51" />
+        <path d="M252 64 L270 80" />
+
+        <circle cx={306} cy={64} r={16} />
+      </g>
+    </svg>
+  );
+}
