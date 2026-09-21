@@ -78,33 +78,39 @@ export function CategoryRow({
           </p>
         </div>
         <div className="flex gap-2">
-          {hasChildren && onToggleExpand && (
-            <button
-              type="button"
-              onClick={onToggleExpand}
-              aria-label={isExpanded ? "Ocultar subcategorias" : "Mostrar subcategorias"}
-              title={isExpanded ? "Ocultar subcategorias" : "Mostrar subcategorias"}
-              className="rounded-md border border-text-secondary/30 px-2.5 py-1.5 text-sm"
-            >
-              {isExpanded ? "▾" : "▸"}
-            </button>
-          )}
           <button
             type="button"
             onClick={() => setIsEditing(true)}
             aria-label="Editar"
             title="Editar"
-            className="flex items-center justify-center rounded-md border border-text-secondary/30 p-2"
+            className="flex cursor-pointer items-center justify-center rounded-md border border-text-secondary/30 p-2 hover:bg-text-secondary/10"
           >
             <Image src="/icon-edit.svg" alt="" width={16} height={16} />
           </button>
+          {hasChildren && onToggleExpand && (
+            <button
+              type="button"
+              onClick={onToggleExpand}
+              aria-label="Subcategorias"
+              title="Subcategorias"
+              className="flex cursor-pointer items-center justify-center rounded-md border border-text-secondary/30 p-2 hover:bg-text-secondary/10"
+            >
+              <Image
+                src="/icon-chevron.svg"
+                alt=""
+                width={16}
+                height={16}
+                className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}
+              />
+            </button>
+          )}
           {!category.isDefault && (
             <button
               type="button"
               onClick={() => setIsConfirmingDelete((v) => !v)}
               aria-label="Excluir"
               title="Excluir"
-              className="flex items-center justify-center rounded-md border border-alert/40 p-2"
+              className="flex cursor-pointer items-center justify-center rounded-md border border-alert/40 p-2 hover:bg-alert/10"
             >
               <Image src="/icon-delete.svg" alt="" width={16} height={16} />
             </button>

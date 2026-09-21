@@ -23,7 +23,7 @@ export function AddCategorySection({
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="w-fit rounded-md bg-primary px-4 py-2 font-medium text-white"
+            className="w-fit cursor-pointer rounded-md bg-primary px-4 py-2 font-medium text-white hover:bg-primary/90"
           >
             Adicionar
           </button>
