@@ -16,7 +16,7 @@ export default async function TransacoesPage({
         <div className="flex justify-end">
           <Link
             href="/dashboard"
-            className="w-fit rounded-md bg-primary px-4 py-2 font-medium text-white hover:bg-primary/90"
+            className="w-fit rounded-md bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 active:scale-95"
           >
             Voltar
           </Link>

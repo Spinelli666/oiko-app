@@ -83,7 +83,7 @@ export function CategoryRow({
             onClick={() => setIsEditing(true)}
             aria-label="Editar"
             title="Editar"
-            className="flex cursor-pointer items-center justify-center rounded-md border border-text-secondary/30 p-2 hover:bg-text-secondary/10"
+            className="flex cursor-pointer items-center justify-center rounded-md border border-text-secondary/30 p-2 transition hover:bg-text-secondary/10 active:scale-90"
           >
             <Image src="/icon-edit.svg" alt="" width={16} height={16} />
           </button>
@@ -93,7 +93,7 @@ export function CategoryRow({
               onClick={onToggleExpand}
               aria-label="Subcategorias"
               title="Subcategorias"
-              className="flex cursor-pointer items-center justify-center rounded-md border border-text-secondary/30 p-2 hover:bg-text-secondary/10"
+              className="flex cursor-pointer items-center justify-center rounded-md border border-text-secondary/30 p-2 transition hover:bg-text-secondary/10 active:scale-90"
             >
               <Image
                 src="/icon-chevron.svg"
@@ -110,7 +110,7 @@ export function CategoryRow({
               onClick={() => setIsConfirmingDelete((v) => !v)}
               aria-label="Excluir"
               title="Excluir"
-              className="flex cursor-pointer items-center justify-center rounded-md border border-alert/40 p-2 hover:bg-alert/10"
+              className="flex cursor-pointer items-center justify-center rounded-md border border-alert/40 p-2 transition hover:bg-alert/10 active:scale-90"
             >
               <Image src="/icon-delete.svg" alt="" width={16} height={16} />
             </button>

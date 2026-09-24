@@ -45,7 +45,7 @@ export function AddCategoryForm({
 
   return (
     <form ref={formRef} action={formAction} className="flex flex-col gap-3">
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div key={mode} className="animate-fade-in grid gap-3 sm:grid-cols-3">
         <div className="flex flex-col gap-1">
           <label htmlFor="name" className="text-sm font-medium">
             {isSubcategoria ? "Nome da subcategoria" : "Nova categoria"}
@@ -74,7 +74,7 @@ export function AddCategoryForm({
               id="parentId"
               type="button"
               onClick={() => setIsPickerOpen(true)}
-              className="cursor-pointer rounded-md border border-text-secondary/30 bg-surface px-3 py-2 text-left outline-none focus:border-primary"
+              className="cursor-pointer rounded-md border border-text-secondary/30 bg-surface px-3 py-2 text-left outline-none transition active:scale-[0.98] focus:border-primary"
             >
               {selectedParent ? (
                 selectedParent.name
@@ -95,7 +95,7 @@ export function AddCategoryForm({
                           setParentId(c.id);
                           setIsPickerOpen(false);
                         }}
-                        className="w-full cursor-pointer rounded-md px-3 py-2 text-left hover:bg-text-secondary/10"
+                        className="w-full cursor-pointer rounded-md px-3 py-2 text-left transition hover:bg-text-secondary/10 active:scale-[0.98]"
                       >
                         {c.name}{" "}
                         <span className="text-sm text-text-secondary">
@@ -158,14 +158,14 @@ export function AddCategoryForm({
         <button
           type="submit"
           disabled={isPending || (isSubcategoria && !parentId)}
-          className="w-fit cursor-pointer rounded-md bg-primary px-4 py-2 font-medium text-white hover:bg-primary/90 disabled:cursor-default disabled:opacity-60"
+          className="w-fit cursor-pointer rounded-md bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 active:scale-95 disabled:cursor-default disabled:active:scale-100 disabled:opacity-60"
         >
           {isPending ? "Adicionando..." : "Adicionar"}
         </button>
         <button
           type="button"
           onClick={() => setMode(isSubcategoria ? "categoria" : "subcategoria")}
-          className="w-fit cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 font-medium hover:bg-text-secondary/10"
+          className="w-fit cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 font-medium transition hover:bg-text-secondary/10 active:scale-95"
         >
           {isSubcategoria ? "Categoria" : "Subcategoria"}
         </button>
@@ -173,7 +173,7 @@ export function AddCategoryForm({
           <button
             type="button"
             onClick={onDone}
-            className="w-fit cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 font-medium hover:bg-text-secondary/10"
+            className="w-fit cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 font-medium transition hover:bg-text-secondary/10 active:scale-95"
           >
             Cancelar
           </button>

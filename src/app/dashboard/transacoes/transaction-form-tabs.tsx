@@ -28,8 +28,8 @@ export function TransactionFormTabs({
           onClick={() => setTab("unica")}
           className={
             tab === "unica"
-              ? "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white"
-              : "rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
+              ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+              : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
           }
         >
           Transação única
@@ -39,8 +39,8 @@ export function TransactionFormTabs({
           onClick={() => setTab("recorrente")}
           className={
             tab === "recorrente"
-              ? "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white"
-              : "rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
+              ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+              : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
           }
         >
           Recorrente
@@ -48,11 +48,11 @@ export function TransactionFormTabs({
       </div>
 
       {tab === "unica" ? (
-        <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
+        <div key={tab} className="animate-fade-in rounded-lg border border-text-secondary/20 bg-surface p-6">
           <AddTransactionForm categories={categories} monthReference={monthReference} />
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div key={tab} className="animate-fade-in flex flex-col gap-4">
           <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
             <AddRecurringTransactionForm categories={categories} />
           </div>
