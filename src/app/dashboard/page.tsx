@@ -11,6 +11,7 @@ import {
   sumIncomeByCategory,
 } from "@/lib/transactions";
 import { BudgetAlertBanner } from "./budget-alert-banner";
+import { CategoryBreakdownTabs } from "./category-breakdown-tabs";
 import { EvolutionSection } from "./evolution-section";
 
 const EVOLUTION_LOOKBACK_YEARS = 5;
@@ -162,66 +163,19 @@ export default async function DashboardPage() {
           <EvolutionSection transactions={evolutionTransactions} />
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-            <p className="mb-3 text-sm font-medium text-text-secondary">
-              Receitas por categoria
-            </p>
-            {sortedIncome.length === 0 ? (
-              <p className="text-text-secondary">
-                Nenhuma receita lançada neste mês ainda.
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {sortedIncome.map(([categoryId, { name, received }]) => (
-                  <li
-                    key={categoryId}
-                    className="flex items-center justify-between"
-                  >
-                    <span>{name}</span>
-                    <span className="font-medium text-success">
-                      {currencyFormatter.format(received)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-            <p className="mb-3 text-sm font-medium text-text-secondary">
-              Despesas por categoria
-            </p>
-            {sortedExpenses.length === 0 ? (
-              <p className="text-text-secondary">
-                Nenhuma despesa lançada neste mês ainda.
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {sortedExpenses.map(([categoryId, { name, spent }]) => {
-                  const limit = budgetByCategory.get(categoryId);
-                  return (
-                    <li
-                      key={categoryId}
-                      className="flex items-center justify-between"
-                    >
-                      <span>{name}</span>
-                      <span className="font-medium text-alert">
-                        {currencyFormatter.format(spent)}
-                        {limit !== undefined && (
-                          <span className="font-normal text-text-secondary">
-                            {" "}
-                            / {currencyFormatter.format(limit)}
-                          </span>
-                        )}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        </div>
+        <CategoryBreakdownTabs
+          income={sortedIncome.map(([categoryId, { name, received }]) => ({
+            categoryId,
+            name,
+            received,
+          }))}
+          expenses={sortedExpenses.map(([categoryId, { name, spent }]) => ({
+            categoryId,
+            name,
+            spent,
+            limit: budgetByCategory.get(categoryId),
+          }))}
+        />
       </div>
     </div>
   );

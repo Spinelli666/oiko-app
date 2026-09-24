@@ -9,23 +9,32 @@ export function AddCategorySection({
 }: {
   topLevelCategories: Array<{ id: string; name: string; kind: CategoryKind }>;
 }) {
-  const [isAdding, setIsAdding] = useState(false);
+  const [kind, setKind] = useState<CategoryKind | null>(null);
 
   return (
     <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-      {isAdding ? (
+      {kind ? (
         <AddCategoryForm
-          topLevelCategories={topLevelCategories}
-          onDone={() => setIsAdding(false)}
+          key={kind}
+          kind={kind}
+          topLevelCategories={topLevelCategories.filter((c) => c.kind === kind)}
+          onDone={() => setKind(null)}
         />
       ) : (
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-2">
           <button
             type="button"
-            onClick={() => setIsAdding(true)}
+            onClick={() => setKind("RECEITA")}
             className="w-fit cursor-pointer rounded-md bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 active:scale-95"
           >
-            Adicionar
+            Receitas
+          </button>
+          <button
+            type="button"
+            onClick={() => setKind("DESPESA")}
+            className="w-fit cursor-pointer rounded-md bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 active:scale-95"
+          >
+            Despesas
           </button>
         </div>
       )}
