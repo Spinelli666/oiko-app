@@ -3,9 +3,7 @@ import { CategoryType, CategoryKind } from "@/generated/prisma/enums";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 
 export class CategoryNotFoundError extends Error {}
-export class InvalidParentError extends Error {}
 export class DefaultCategoryError extends Error {}
-export class CategoryHasChildrenError extends Error {}
 export class ReassignRequiredError extends Error {}
 export class InvalidReassignTargetError extends Error {}
 
@@ -56,31 +54,14 @@ export function getCategoriesForUser(userId: string) {
   });
 }
 
-export type CategoryWithChildren = CategoryModel & {
-  children: CategoryModel[];
-};
-
-/** Groups a flat category list into a two-level tree (top-level
- * categories with their subcategories), split by receita/despesa. */
-export function buildCategoryTree(categories: CategoryModel[]): {
-  receitas: CategoryWithChildren[];
-  despesas: CategoryWithChildren[];
+/** Splits a flat category list by receita/despesa. */
+export function splitCategoriesByKind(categories: CategoryModel[]): {
+  receitas: CategoryModel[];
+  despesas: CategoryModel[];
 } {
-  const childrenByParent = new Map<string, CategoryModel[]>();
-  for (const category of categories) {
-    if (!category.parentId) continue;
-    const siblings = childrenByParent.get(category.parentId) ?? [];
-    siblings.push(category);
-    childrenByParent.set(category.parentId, siblings);
-  }
-
-  const topLevel = categories
-    .filter((c) => !c.parentId)
-    .map((c) => ({ ...c, children: childrenByParent.get(c.id) ?? [] }));
-
   return {
-    receitas: topLevel.filter((c) => c.kind === "RECEITA"),
-    despesas: topLevel.filter((c) => c.kind === "DESPESA"),
+    receitas: categories.filter((c) => c.kind === "RECEITA"),
+    despesas: categories.filter((c) => c.kind === "DESPESA"),
   };
 }
 
@@ -99,32 +80,14 @@ export async function createCategory({
   name,
   type,
   kind,
-  parentId,
 }: {
   userId: string;
   name: string;
   type: CategoryType;
   kind: CategoryKind;
-  parentId?: string;
 }) {
-  let resolvedKind = kind;
-
-  if (parentId) {
-    const parent = await prisma.category.findFirst({
-      where: { id: parentId, userId },
-    });
-    if (!parent) {
-      throw new CategoryNotFoundError();
-    }
-    if (parent.parentId) {
-      throw new InvalidParentError();
-    }
-    // A subcategory always follows its parent's receita/despesa kind.
-    resolvedKind = parent.kind;
-  }
-
   return prisma.category.create({
-    data: { userId, name, type, kind: resolvedKind, parentId: parentId ?? null },
+    data: { userId, name, type, kind },
   });
 }
 
@@ -146,13 +109,9 @@ export async function updateCategory({
     throw new CategoryNotFoundError();
   }
 
-  // Subcategories always keep their parent's kind, regardless of what
-  // the (hidden, disabled) form field sends.
-  const resolvedKind = category.parentId ? category.kind : kind;
-
   const { count } = await prisma.category.updateMany({
     where: { id, userId },
-    data: { name, type, kind: resolvedKind },
+    data: { name, type, kind },
   });
 
   if (count === 0) {
@@ -176,11 +135,6 @@ export async function deleteCategory({
 
   if (category.isDefault) {
     throw new DefaultCategoryError();
-  }
-
-  const childCount = await prisma.category.count({ where: { parentId: id } });
-  if (childCount > 0) {
-    throw new CategoryHasChildrenError();
   }
 
   const transactionCount = await prisma.transaction.count({

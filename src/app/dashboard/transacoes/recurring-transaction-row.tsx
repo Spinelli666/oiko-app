@@ -31,7 +31,6 @@ export function RecurringTransactionRow({
   categories: CategoryModel[];
 }) {
   const [isEditing, setIsEditing] = useState(false);
-  const categoryNameById = new Map(categories.map((c) => [c.id, c.name]));
   const isExpense = recurringTransaction.category.kind === "DESPESA";
 
   const [state, formAction, isPending] = useActionState(
@@ -70,10 +69,7 @@ export function RecurringTransactionRow({
           >
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
-                {category.parentId
-                  ? `${categoryNameById.get(category.parentId) ?? ""} > ${category.name}`
-                  : category.name}{" "}
-                ({CATEGORY_KIND_LABELS[category.kind]})
+                {category.name} ({CATEGORY_KIND_LABELS[category.kind]})
               </option>
             ))}
           </select>

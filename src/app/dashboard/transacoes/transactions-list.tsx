@@ -14,8 +14,6 @@ export function TransactionsList({
 }) {
   const [categoryId, setCategoryId] = useState("");
 
-  const categoryNameById = new Map(categories.map((c) => [c.id, c.name]));
-
   const filtered = categoryId
     ? transactions.filter((t) => t.categoryId === categoryId)
     : transactions;
@@ -35,10 +33,7 @@ export function TransactionsList({
           <option value="">Todas as categorias</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
-              {category.parentId
-                ? `${categoryNameById.get(category.parentId) ?? ""} > ${category.name}`
-                : category.name}{" "}
-              ({CATEGORY_KIND_LABELS[category.kind]})
+              {category.name} ({CATEGORY_KIND_LABELS[category.kind]})
             </option>
           ))}
         </select>

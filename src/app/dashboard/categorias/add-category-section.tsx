@@ -4,22 +4,13 @@ import { useState } from "react";
 import type { CategoryKind } from "@/generated/prisma/enums";
 import { AddCategoryForm } from "./add-category-form";
 
-export function AddCategorySection({
-  topLevelCategories,
-}: {
-  topLevelCategories: Array<{ id: string; name: string; kind: CategoryKind }>;
-}) {
+export function AddCategorySection() {
   const [kind, setKind] = useState<CategoryKind | null>(null);
 
   return (
     <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
       {kind ? (
-        <AddCategoryForm
-          key={kind}
-          kind={kind}
-          topLevelCategories={topLevelCategories.filter((c) => c.kind === kind)}
-          onDone={() => setKind(null)}
-        />
+        <AddCategoryForm key={kind} kind={kind} onDone={() => setKind(null)} />
       ) : (
         <div className="flex justify-center gap-2">
           <button

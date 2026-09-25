@@ -3,15 +3,15 @@ import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { computeBudgetAlerts } from "@/lib/budget-status";
+import { getCategoriesForUser, splitCategoriesByKind } from "@/lib/categories";
 import { ensureRecurringTransactionsGenerated } from "@/lib/recurring-transactions";
 import {
   getTransactionsForUserSince,
   startOfCurrentMonth,
-  sumExpensesByCategory,
-  sumIncomeByCategory,
 } from "@/lib/transactions";
+import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { BudgetAlertBanner } from "./budget-alert-banner";
-import { CategoryBreakdownTabs } from "./category-breakdown-tabs";
+import { CategoryBreakdownTabs, type BreakdownNode } from "./category-breakdown-tabs";
 import { EvolutionSection } from "./evolution-section";
 
 const EVOLUTION_LOOKBACK_YEARS = 5;
@@ -24,6 +24,57 @@ function evolutionLookbackStart(reference = new Date()) {
       reference.getUTCDate()
     )
   );
+}
+
+type MonthTransaction = {
+  id: string;
+  categoryId: string;
+  description: string;
+  amount: number;
+  date: Date;
+};
+
+/** Groups a month's transactions by category into sorted breakdown nodes,
+ * keeping each transaction's description for the expanded view. Only
+ * categories with at least one matching transaction are kept. */
+function buildBreakdownNodes(
+  categories: CategoryModel[],
+  transactions: MonthTransaction[],
+  limitByCategory?: Map<string, number>
+): BreakdownNode[] {
+  const transactionsByCategory = new Map<string, MonthTransaction[]>();
+  for (const transaction of transactions) {
+    const list = transactionsByCategory.get(transaction.categoryId) ?? [];
+    list.push(transaction);
+    transactionsByCategory.set(transaction.categoryId, list);
+  }
+
+  return categories
+    .map((category) => {
+      const categoryTransactions = (transactionsByCategory.get(category.id) ?? [])
+        .slice()
+        .sort((a, b) => b.date.getTime() - a.date.getTime());
+
+      const total = categoryTransactions.reduce(
+        (sum, t) => sum + Math.abs(t.amount),
+        0
+      );
+
+      return {
+        categoryId: category.id,
+        name: category.name,
+        total,
+        limit: limitByCategory?.get(category.id),
+        transactions: categoryTransactions.map((t) => ({
+          id: t.id,
+          description: t.description,
+          amount: Math.abs(t.amount),
+          date: t.date.toISOString(),
+        })),
+      };
+    })
+    .filter((node) => node.total > 0)
+    .sort((a, b) => b.total - a.total);
 }
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -39,9 +90,10 @@ export default async function DashboardPage() {
 
   await ensureRecurringTransactionsGenerated(session.user.id);
 
-  const [allTransactions, budgets] = await Promise.all([
+  const [allTransactions, budgets, categories] = await Promise.all([
     getTransactionsForUserSince(session.user.id, evolutionLookbackStart()),
     getBudgetsForCurrentMonth(session.user.id),
+    getCategoriesForUser(session.user.id),
   ]);
 
   const currentMonth = startOfCurrentMonth();
@@ -62,31 +114,32 @@ export default async function DashboardPage() {
     transactions.map((t) => [t.categoryId, t.category.name])
   );
 
-  const spentByCategory = sumExpensesByCategory(
-    transactions.map((t) => ({
-      categoryId: t.categoryId,
-      amount: Number(t.amount),
-    }))
-  );
-  const sortedExpenses = [...spentByCategory.entries()]
-    .map(
-      ([categoryId, spent]) =>
-        [categoryId, { name: categoryNameById.get(categoryId) ?? "", spent }] as const
-    )
-    .sort((a, b) => b[1].spent - a[1].spent);
+  const monthTransactions: MonthTransaction[] = transactions.map((t) => ({
+    id: t.id,
+    categoryId: t.categoryId,
+    description: t.description,
+    amount: Number(t.amount),
+    date: t.date,
+  }));
+  const expenseTransactions = monthTransactions.filter((t) => t.amount < 0);
+  const incomeTransactions = monthTransactions.filter((t) => t.amount > 0);
 
-  const incomeByCategory = sumIncomeByCategory(
-    transactions.map((t) => ({
-      categoryId: t.categoryId,
-      amount: Number(t.amount),
-    }))
+  const spentByCategory = new Map<string, number>();
+  for (const t of expenseTransactions) {
+    spentByCategory.set(
+      t.categoryId,
+      (spentByCategory.get(t.categoryId) ?? 0) + Math.abs(t.amount)
+    );
+  }
+
+  const { receitas: receitaCategories, despesas: despesaCategories } =
+    splitCategoriesByKind(categories);
+  const incomeNodes = buildBreakdownNodes(receitaCategories, incomeTransactions);
+  const expenseNodes = buildBreakdownNodes(
+    despesaCategories,
+    expenseTransactions,
+    budgetByCategory
   );
-  const sortedIncome = [...incomeByCategory.entries()]
-    .map(
-      ([categoryId, received]) =>
-        [categoryId, { name: categoryNameById.get(categoryId) ?? "", received }] as const
-    )
-    .sort((a, b) => b[1].received - a[1].received);
 
   const budgetAlerts = computeBudgetAlerts(
     [...spentByCategory.entries()].map(([categoryId, spentAmount]) => ({
@@ -163,19 +216,7 @@ export default async function DashboardPage() {
           <EvolutionSection transactions={evolutionTransactions} />
         </div>
 
-        <CategoryBreakdownTabs
-          income={sortedIncome.map(([categoryId, { name, received }]) => ({
-            categoryId,
-            name,
-            received,
-          }))}
-          expenses={sortedExpenses.map(([categoryId, { name, spent }]) => ({
-            categoryId,
-            name,
-            spent,
-            limit: budgetByCategory.get(categoryId),
-          }))}
-        />
+        <CategoryBreakdownTabs income={incomeNodes} expenses={expenseNodes} />
       </div>
     </div>
   );

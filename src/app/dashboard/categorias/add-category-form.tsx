@@ -1,26 +1,18 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
-import { Dialog } from "@/components/dialog";
+import { useActionState, useRef } from "react";
 import { createCategoryAction } from "./actions";
 import { CATEGORY_KIND_LABELS, CATEGORY_TYPE_OPTIONS } from "./category-type-labels";
 import type { CategoryKind } from "@/generated/prisma/enums";
 
-type Mode = "categoria" | "subcategoria";
-
 export function AddCategoryForm({
   kind,
-  topLevelCategories,
   onDone,
 }: {
   kind: CategoryKind;
-  topLevelCategories: Array<{ id: string; name: string; kind: CategoryKind }>;
   onDone?: () => void;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [mode, setMode] = useState<Mode>("categoria");
-  const [parentId, setParentId] = useState("");
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [state, formAction, isPending] = useActionState(
     async (
       prevState: Awaited<ReturnType<typeof createCategoryAction>>,
@@ -29,8 +21,6 @@ export function AddCategoryForm({
       const result = await createCategoryAction(prevState, formData);
       if (!result?.error) {
         formRef.current?.reset();
-        setMode("categoria");
-        setParentId("");
         onDone?.();
       }
       return result;
@@ -38,82 +28,24 @@ export function AddCategoryForm({
     undefined
   );
 
-  const isSubcategoria = mode === "subcategoria";
-  const selectedParent = topLevelCategories.find((c) => c.id === parentId);
-
   return (
     <form ref={formRef} action={formAction} className="flex flex-col gap-3">
-      <div
-        key={mode}
-        className={`animate-fade-in grid gap-3 ${isSubcategoria ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}
-      >
+      <div className="grid gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
           <label htmlFor="name" className="text-sm font-medium">
-            {isSubcategoria
-              ? "Nome da subcategoria"
-              : `Nova categoria de ${CATEGORY_KIND_LABELS[kind].toLowerCase()}`}
+            {`Nova categoria de ${CATEGORY_KIND_LABELS[kind].toLowerCase()}`}
           </label>
           <input
             id="name"
             name="name"
             type="text"
             required
-            placeholder={isSubcategoria ? "Ex: Supermercado" : "Ex: Alimentação"}
+            placeholder="Ex: Alimentação"
             className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
           />
         </div>
 
-        {isSubcategoria ? (
-          <div className="flex flex-col gap-1">
-            <label htmlFor="parentId" className="text-sm font-medium">
-              Categoria
-            </label>
-            {/* A resolução real do kind é feita no servidor a partir da
-                categoria pai escolhida; este campo só existe pra satisfazer
-                a validação do formulário. */}
-            <input type="hidden" name="kind" value={kind} />
-            <input type="hidden" name="parentId" value={parentId} />
-            <button
-              id="parentId"
-              type="button"
-              onClick={() => setIsPickerOpen(true)}
-              className="cursor-pointer rounded-md border border-text-secondary/30 bg-surface px-3 py-2 text-left outline-none transition active:scale-[0.98] focus:border-primary"
-            >
-              {selectedParent ? (
-                selectedParent.name
-              ) : (
-                <span className="text-text-secondary">Selecione uma categoria</span>
-              )}
-            </button>
-
-            {isPickerOpen && (
-              <Dialog onClose={() => setIsPickerOpen(false)}>
-                <h2 className="mb-4 text-lg font-semibold">Selecione a categoria</h2>
-                <ul className="flex flex-col gap-1">
-                  {topLevelCategories.map((c) => (
-                    <li key={c.id}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setParentId(c.id);
-                          setIsPickerOpen(false);
-                        }}
-                        className="w-full cursor-pointer rounded-md px-3 py-2 text-left transition hover:bg-text-secondary/10 active:scale-[0.98]"
-                      >
-                        {c.name}{" "}
-                        <span className="text-sm text-text-secondary">
-                          ({CATEGORY_KIND_LABELS[c.kind]})
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </Dialog>
-            )}
-          </div>
-        ) : (
-          <input type="hidden" name="kind" value={kind} />
-        )}
+        <input type="hidden" name="kind" value={kind} />
 
         <div className="flex flex-col gap-1">
           <label htmlFor="type" className="text-sm font-medium">
@@ -143,17 +75,10 @@ export function AddCategoryForm({
       <div className="flex justify-center gap-2">
         <button
           type="submit"
-          disabled={isPending || (isSubcategoria && !parentId)}
+          disabled={isPending}
           className="w-fit cursor-pointer rounded-md bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 active:scale-95 disabled:cursor-default disabled:active:scale-100 disabled:opacity-60"
         >
           {isPending ? "Adicionando..." : "Adicionar"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode(isSubcategoria ? "categoria" : "subcategoria")}
-          className="w-fit cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 font-medium transition hover:bg-text-secondary/10 active:scale-95"
-        >
-          {isSubcategoria ? "Categoria" : "Subcategoria"}
         </button>
         {onDone && (
           <button

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { CategoryWithChildren } from "@/lib/categories";
-import { CategoryGroup } from "./category-group";
+import type { CategoryModel } from "@/generated/prisma/models/Category";
+import { CategoryRow } from "./category-row";
 
 export function CategoriesList({
   receitas,
@@ -11,21 +11,18 @@ export function CategoriesList({
   reassignOptionsByCategory,
   children,
 }: {
-  receitas: CategoryWithChildren[];
-  despesas: CategoryWithChildren[];
+  receitas: CategoryModel[];
+  despesas: CategoryModel[];
   transactionCounts: Map<string, number>;
   reassignOptionsByCategory: Map<string, Array<{ id: string; name: string }>>;
   children?: React.ReactNode;
 }) {
   const [query, setQuery] = useState("");
 
-  const matches = (category: CategoryWithChildren) => {
+  const matches = (category: CategoryModel) => {
     const term = query.trim().toLowerCase();
     if (!term) return true;
-    if (category.name.toLowerCase().includes(term)) return true;
-    return category.children.some((child) =>
-      child.name.toLowerCase().includes(term)
-    );
+    return category.name.toLowerCase().includes(term);
   };
 
   const filteredReceitas = receitas.filter(matches);
@@ -42,7 +39,7 @@ export function CategoriesList({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Pesquisar categoria ou subcategoria..."
+          placeholder="Pesquisar categoria..."
           className="w-full rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
         />
       </div>
@@ -61,11 +58,11 @@ export function CategoriesList({
           ) : (
             <ul>
               {filteredReceitas.map((category) => (
-                <CategoryGroup
+                <CategoryRow
                   key={category.id}
                   category={category}
-                  transactionCounts={transactionCounts}
-                  reassignOptionsByCategory={reassignOptionsByCategory}
+                  transactionCount={transactionCounts.get(category.id) ?? 0}
+                  reassignOptions={reassignOptionsByCategory.get(category.id) ?? []}
                 />
               ))}
             </ul>
@@ -83,11 +80,11 @@ export function CategoriesList({
           ) : (
             <ul>
               {filteredDespesas.map((category) => (
-                <CategoryGroup
+                <CategoryRow
                   key={category.id}
                   category={category}
-                  transactionCounts={transactionCounts}
-                  reassignOptionsByCategory={reassignOptionsByCategory}
+                  transactionCount={transactionCounts.get(category.id) ?? 0}
+                  reassignOptions={reassignOptionsByCategory.get(category.id) ?? []}
                 />
               ))}
             </ul>

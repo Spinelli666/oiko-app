@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import {
-  buildCategoryTree,
   getCategoriesForUser,
   getTransactionCountsByCategory,
+  splitCategoriesByKind,
 } from "@/lib/categories";
 import { AddCategorySection } from "./add-category-section";
 import { CategoriesList } from "./categories-list";
@@ -19,23 +19,14 @@ export async function CategoriesContent() {
     getTransactionCountsByCategory(session.user.id),
   ]);
 
-  const { receitas, despesas } = buildCategoryTree(categories);
-
-  const topLevelCategories = categories
-    .filter((c) => !c.parentId)
-    .map((c) => ({ id: c.id, name: c.name, kind: c.kind }));
+  const { receitas, despesas } = splitCategoriesByKind(categories);
 
   const reassignOptionsByCategory = new Map(
     categories.map((category) => [
       category.id,
       categories
         .filter((c) => c.id !== category.id && c.kind === category.kind)
-        .map((c) => ({
-          id: c.id,
-          name: c.parentId
-            ? `${categories.find((p) => p.id === c.parentId)?.name ?? ""} > ${c.name}`
-            : c.name,
-        })),
+        .map((c) => ({ id: c.id, name: c.name })),
     ])
   );
 
@@ -49,7 +40,7 @@ export async function CategoriesContent() {
         transactionCounts={transactionCounts}
         reassignOptionsByCategory={reassignOptionsByCategory}
       >
-        <AddCategorySection topLevelCategories={topLevelCategories} />
+        <AddCategorySection />
       </CategoriesList>
     </div>
   );

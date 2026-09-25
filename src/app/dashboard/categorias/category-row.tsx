@@ -5,26 +5,14 @@ import Image from "next/image";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { Dialog } from "@/components/dialog";
 import { deleteCategoryAction, updateCategoryAction } from "./actions";
-import {
-  CATEGORY_KIND_LABELS,
-  CATEGORY_TYPE_LABELS,
-  CATEGORY_TYPE_OPTIONS,
-} from "./category-type-labels";
+import { CATEGORY_TYPE_LABELS, CATEGORY_TYPE_OPTIONS } from "./category-type-labels";
 
 export function CategoryRow({
   category,
-  isSubcategory = false,
-  hasChildren = false,
-  isExpanded = false,
-  onToggleExpand,
   transactionCount,
   reassignOptions,
 }: {
   category: CategoryModel;
-  isSubcategory?: boolean;
-  hasChildren?: boolean;
-  isExpanded?: boolean;
-  onToggleExpand?: () => void;
   transactionCount: number;
   reassignOptions: Array<{ id: string; name: string }>;
 }) {
@@ -59,10 +47,8 @@ export function CategoryRow({
     undefined
   );
 
-  const rowPadding = isSubcategory ? "py-2 pl-8" : "py-3";
-
   return (
-    <li className={`flex flex-col gap-2 border-b border-text-secondary/10 ${rowPadding}`}>
+    <li className="flex flex-col gap-2 border-b border-text-secondary/10 py-3">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="font-medium">
@@ -87,23 +73,6 @@ export function CategoryRow({
           >
             <Image src="/icon-edit.svg" alt="" width={16} height={16} />
           </button>
-          {hasChildren && onToggleExpand && (
-            <button
-              type="button"
-              onClick={onToggleExpand}
-              aria-label="Subcategorias"
-              title="Subcategorias"
-              className="flex cursor-pointer items-center justify-center rounded-md border border-text-secondary/30 p-2 transition hover:bg-text-secondary/10 active:scale-90"
-            >
-              <Image
-                src="/icon-chevron.svg"
-                alt=""
-                width={16}
-                height={16}
-                className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}
-              />
-            </button>
-          )}
           {!category.isDefault && (
             <button
               type="button"
@@ -120,56 +89,49 @@ export function CategoryRow({
 
       {isConfirmingDelete && !category.isDefault && (
         <div className="rounded-md border border-alert/30 bg-alert/5 p-3">
-          {hasChildren ? (
-            <p className="text-sm text-alert">
-              Esta categoria tem subcategorias. Exclua ou mova as
-              subcategorias primeiro.
-            </p>
-          ) : (
-            <form action={deleteFormAction} className="flex flex-col gap-2">
-              <input type="hidden" name="id" value={category.id} />
-              {transactionCount > 0 && (
-                <>
-                  <p className="text-sm">
-                    Essa categoria tem {transactionCount}{" "}
-                    {transactionCount === 1 ? "transação" : "transações"}.
-                    Para qual categoria elas devem ir?
-                  </p>
-                  <select
-                    name="reassignToId"
-                    required
-                    defaultValue=""
-                    className="rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 text-sm outline-none focus:border-primary"
-                  >
-                    <option value="" disabled>
-                      Selecione uma categoria
+          <form action={deleteFormAction} className="flex flex-col gap-2">
+            <input type="hidden" name="id" value={category.id} />
+            {transactionCount > 0 && (
+              <>
+                <p className="text-sm">
+                  Essa categoria tem {transactionCount}{" "}
+                  {transactionCount === 1 ? "transação" : "transações"}.
+                  Para qual categoria elas devem ir?
+                </p>
+                <select
+                  name="reassignToId"
+                  required
+                  defaultValue=""
+                  className="rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 text-sm outline-none focus:border-primary"
+                >
+                  <option value="" disabled>
+                    Selecione uma categoria
+                  </option>
+                  {reassignOptions.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name}
                     </option>
-                    {reassignOptions.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.name}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              )}
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  disabled={isDeletePending}
-                  className="w-fit rounded-md bg-alert px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
-                >
-                  {isDeletePending ? "Excluindo..." : "Confirmar exclusão"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsConfirmingDelete(false)}
-                  className="w-fit rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          )}
+                  ))}
+                </select>
+              </>
+            )}
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={isDeletePending}
+                className="w-fit rounded-md bg-alert px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+              >
+                {isDeletePending ? "Excluindo..." : "Confirmar exclusão"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsConfirmingDelete(false)}
+                className="w-fit rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
           {deleteState?.error && (
             <p className="mt-2 text-sm text-alert" role="alert">
               {deleteState.error}
@@ -203,24 +165,15 @@ export function CategoryRow({
                 <label htmlFor={`kind-${category.id}`} className="text-sm font-medium">
                   Tipo
                 </label>
-                {isSubcategory ? (
-                  <>
-                    <input type="hidden" name="kind" value={category.kind} />
-                    <p className="rounded-md border border-text-secondary/20 bg-background px-3 py-2 text-sm text-text-secondary">
-                      {CATEGORY_KIND_LABELS[category.kind]}
-                    </p>
-                  </>
-                ) : (
-                  <select
-                    id={`kind-${category.id}`}
-                    name="kind"
-                    defaultValue={category.kind}
-                    className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
-                  >
-                    <option value="DESPESA">Despesa</option>
-                    <option value="RECEITA">Receita</option>
-                  </select>
-                )}
+                <select
+                  id={`kind-${category.id}`}
+                  name="kind"
+                  defaultValue={category.kind}
+                  className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
+                >
+                  <option value="DESPESA">Despesa</option>
+                  <option value="RECEITA">Receita</option>
+                </select>
               </div>
 
               <div className="flex flex-col gap-1">

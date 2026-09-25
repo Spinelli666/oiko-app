@@ -1,9 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
-type IncomeItem = { categoryId: string; name: string; received: number };
-type ExpenseItem = { categoryId: string; name: string; spent: number; limit?: number };
+export type BreakdownTransaction = {
+  id: string;
+  description: string;
+  amount: number;
+  date: string;
+};
+
+export type BreakdownNode = {
+  categoryId: string;
+  name: string;
+  total: number;
+  limit?: number;
+  transactions: BreakdownTransaction[];
+};
 
 type Tab = "receitas" | "despesas";
 
@@ -12,12 +25,116 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   currency: "BRL",
 });
 
+const dateFormatter = new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" });
+
+function CategoryBreakdownList({
+  nodes,
+  isExpense,
+}: {
+  nodes: BreakdownNode[];
+  isExpense: boolean;
+}) {
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const maxTotal = Math.max(1, ...nodes.map((n) => n.total));
+  const amountColor = isExpense ? "text-alert" : "text-success";
+  const barColor = isExpense ? "bg-alert" : "bg-success";
+  const sign = isExpense ? "-" : "+";
+
+  function toggle(categoryId: string) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
+  }
+
+  return (
+    <ul className="flex flex-col gap-3">
+      {nodes.map((node) => {
+        const isExpanded = expandedIds.has(node.categoryId);
+        return (
+          <li key={node.categoryId} className="flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => toggle(node.categoryId)}
+                  aria-label="Lançamentos"
+                  title="Lançamentos"
+                  className="flex cursor-pointer items-center justify-center rounded-md p-1 transition hover:bg-text-secondary/10 active:scale-90"
+                >
+                  <Image
+                    src="/icon-chevron.svg"
+                    alt=""
+                    width={14}
+                    height={14}
+                    className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                  />
+                </button>
+                <span>{node.name}</span>
+              </div>
+              <span className={`font-medium ${amountColor}`}>
+                {sign}
+                {currencyFormatter.format(node.total)}
+                {isExpense && node.limit !== undefined && (
+                  <span className="font-normal text-text-secondary">
+                    {" "}
+                    / {currencyFormatter.format(node.limit)}
+                  </span>
+                )}
+              </span>
+            </div>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-text-secondary/10">
+              <div
+                className={`h-full rounded-full transition-all duration-300 ${barColor}`}
+                style={{ width: `${(node.total / maxTotal) * 100}%` }}
+              />
+            </div>
+
+            <div
+              className={`grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out ${
+                isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+              }`}
+            >
+              <ul className="flex min-h-0 flex-col gap-2 pl-6 pt-2">
+                {node.transactions.map((transaction) => (
+                  <li
+                    key={transaction.id}
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <div>
+                      <p className="text-sm text-text-secondary">
+                        {transaction.description}
+                      </p>
+                      <p className="text-xs text-text-secondary/70">
+                        {dateFormatter.format(new Date(transaction.date))}
+                      </p>
+                    </div>
+                    <span className={`text-sm font-medium ${amountColor}`}>
+                      {sign}
+                      {currencyFormatter.format(transaction.amount)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export function CategoryBreakdownTabs({
   income,
   expenses,
 }: {
-  income: IncomeItem[];
-  expenses: ExpenseItem[];
+  income: BreakdownNode[];
+  expenses: BreakdownNode[];
 }) {
   const [tab, setTab] = useState<Tab>("receitas");
 
@@ -61,16 +178,7 @@ export function CategoryBreakdownTabs({
               Nenhuma receita lançada neste mês ainda.
             </p>
           ) : (
-            <ul className="flex flex-col gap-2">
-              {income.map(({ categoryId, name, received }) => (
-                <li key={categoryId} className="flex items-center justify-between">
-                  <span>{name}</span>
-                  <span className="font-medium text-success">
-                    {currencyFormatter.format(received)}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <CategoryBreakdownList nodes={income} isExpense={false} />
           )}
         </div>
       ) : (
@@ -86,22 +194,7 @@ export function CategoryBreakdownTabs({
               Nenhuma despesa lançada neste mês ainda.
             </p>
           ) : (
-            <ul className="flex flex-col gap-2">
-              {expenses.map(({ categoryId, name, spent, limit }) => (
-                <li key={categoryId} className="flex items-center justify-between">
-                  <span>{name}</span>
-                  <span className="font-medium text-alert">
-                    {currencyFormatter.format(spent)}
-                    {limit !== undefined && (
-                      <span className="font-normal text-text-secondary">
-                        {" "}
-                        / {currencyFormatter.format(limit)}
-                      </span>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <CategoryBreakdownList nodes={expenses} isExpense={true} />
           )}
         </div>
       )}

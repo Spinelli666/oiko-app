@@ -29,7 +29,6 @@ export function TransactionRow({
   const [isEditing, setIsEditing] = useState(false);
   const amount = transaction.amount;
   const isExpense = amount < 0;
-  const categoryNameById = new Map(categories.map((c) => [c.id, c.name]));
 
   const [state, formAction, isPending] = useActionState(
     async (
@@ -67,10 +66,7 @@ export function TransactionRow({
           >
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
-                {category.parentId
-                  ? `${categoryNameById.get(category.parentId) ?? ""} > ${category.name}`
-                  : category.name}{" "}
-                ({CATEGORY_KIND_LABELS[category.kind]})
+                {category.name} ({CATEGORY_KIND_LABELS[category.kind]})
               </option>
             ))}
           </select>

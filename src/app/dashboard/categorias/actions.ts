@@ -3,10 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import {
-  CategoryHasChildrenError,
   CategoryNotFoundError,
   DefaultCategoryError,
-  InvalidParentError,
   InvalidReassignTargetError,
   ReassignRequiredError,
   createCategory,
@@ -31,29 +29,17 @@ export async function createCategoryAction(
 ): Promise<CategoryActionState> {
   const userId = await requireUserId();
 
-  const parentIdRaw = formData.get("parentId");
   const parsed = CategorySchema.safeParse({
     name: formData.get("name"),
     type: formData.get("type"),
     kind: formData.get("kind"),
-    parentId: typeof parentIdRaw === "string" && parentIdRaw.length > 0 ? parentIdRaw : undefined,
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Dados inválidos." };
   }
 
-  try {
-    await createCategory({ userId, ...parsed.data });
-  } catch (error) {
-    if (error instanceof CategoryNotFoundError) {
-      return { error: "Categoria pai não encontrada." };
-    }
-    if (error instanceof InvalidParentError) {
-      return { error: "Não é possível criar uma subcategoria dentro de outra subcategoria." };
-    }
-    throw error;
-  }
+  await createCategory({ userId, ...parsed.data });
 
   revalidatePath("/dashboard/categorias");
 }
@@ -112,9 +98,6 @@ export async function deleteCategoryAction(
   } catch (error) {
     if (error instanceof DefaultCategoryError) {
       return { error: "Categorias padrão não podem ser excluídas." };
-    }
-    if (error instanceof CategoryHasChildrenError) {
-      return { error: "Remova ou mova as subcategorias antes de excluir esta categoria." };
     }
     if (error instanceof ReassignRequiredError) {
       return { error: "Escolha para qual categoria mover as transações existentes." };
