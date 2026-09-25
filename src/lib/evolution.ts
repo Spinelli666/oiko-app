@@ -1,3 +1,5 @@
+import { todayInAppTimezone } from "@/lib/dates";
+
 export type Granularity = "diario" | "semanal" | "mensal" | "anual";
 
 export type EvolutionPoint = {
@@ -141,7 +143,7 @@ const DEFAULT_BUCKETS_BACK: Record<Granularity, number> = {
  * without an explicit custom date range. */
 export function defaultRangeFor(
   granularity: Granularity,
-  reference = new Date()
+  reference = todayInAppTimezone()
 ): { from: Date; to: Date } {
   const currentBucket = bucketStart(reference, granularity);
   const from = addBuckets(

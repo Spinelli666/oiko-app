@@ -2,11 +2,12 @@
 
 import { useActionState, useRef } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
+import { todayInAppTimezone } from "@/lib/dates";
 import { createTransactionAction } from "./actions";
 import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
 
 function defaultDateFor(monthReference?: Date) {
-  const today = new Date();
+  const today = todayInAppTimezone();
   const isCurrentMonth =
     !monthReference ||
     (monthReference.getUTCFullYear() === today.getUTCFullYear() &&

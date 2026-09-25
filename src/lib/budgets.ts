@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { CategoryNotFoundError } from "@/lib/categories";
+import { todayInAppTimezone } from "@/lib/dates";
 
 export class CategoryNotDespesaError extends Error {}
 
-function currentMonthReference(reference = new Date()) {
+function currentMonthReference(reference = todayInAppTimezone()) {
   return new Date(
     Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), 1)
   );

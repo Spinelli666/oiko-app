@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { CategoryNotFoundError } from "@/lib/categories";
+import { todayInAppTimezone } from "@/lib/dates";
 
 export class TransactionNotFoundError extends Error {}
 
-export function startOfCurrentMonth(reference = new Date()) {
+export function startOfCurrentMonth(reference = todayInAppTimezone()) {
   return new Date(
     Date.UTC(reference.getUTCFullYear(), reference.getUTCMonth(), 1)
   );

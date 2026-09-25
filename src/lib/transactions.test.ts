@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { todayInAppTimezone } from "./dates";
 import {
   parseMonthReference,
   sumExpensesByCategory,
@@ -74,7 +75,7 @@ describe("parseMonthReference", () => {
   });
 
   it("cai no mês atual quando o parâmetro está ausente", () => {
-    const now = new Date();
+    const now = todayInAppTimezone();
     const result = parseMonthReference(undefined);
     expect(result.getUTCFullYear()).toBe(now.getUTCFullYear());
     expect(result.getUTCMonth()).toBe(now.getUTCMonth());
@@ -82,14 +83,14 @@ describe("parseMonthReference", () => {
   });
 
   it("cai no mês atual quando o parâmetro está malformado", () => {
-    const now = new Date();
+    const now = todayInAppTimezone();
     const result = parseMonthReference("mes-invalido");
     expect(result.getUTCFullYear()).toBe(now.getUTCFullYear());
     expect(result.getUTCMonth()).toBe(now.getUTCMonth());
   });
 
   it("cai no mês atual quando o mês está fora do intervalo 01-12", () => {
-    const now = new Date();
+    const now = todayInAppTimezone();
     const result = parseMonthReference("2026-13");
     expect(result.getUTCFullYear()).toBe(now.getUTCFullYear());
     expect(result.getUTCMonth()).toBe(now.getUTCMonth());

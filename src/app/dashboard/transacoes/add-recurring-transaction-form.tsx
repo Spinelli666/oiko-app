@@ -2,6 +2,7 @@
 
 import { useActionState, useRef } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
+import { todayInAppTimezone } from "@/lib/dates";
 import { createRecurringTransactionAction } from "./actions";
 import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
 
@@ -85,7 +86,7 @@ export function AddRecurringTransactionForm({
             name="startDate"
             type="date"
             required
-            defaultValue={new Date().toISOString().slice(0, 10)}
+            defaultValue={todayInAppTimezone().toISOString().slice(0, 10)}
             className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
           />
         </div>

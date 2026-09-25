@@ -4,6 +4,7 @@ import { auth, signOut } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { computeBudgetAlerts } from "@/lib/budget-status";
 import { getCategoriesForUser, splitCategoriesByKind } from "@/lib/categories";
+import { todayInAppTimezone } from "@/lib/dates";
 import { ensureRecurringTransactionsGenerated } from "@/lib/recurring-transactions";
 import {
   getTransactionsForUserSince,
@@ -16,7 +17,7 @@ import { EvolutionSection } from "./evolution-section";
 
 const EVOLUTION_LOOKBACK_YEARS = 5;
 
-function evolutionLookbackStart(reference = new Date()) {
+function evolutionLookbackStart(reference = todayInAppTimezone()) {
   return new Date(
     Date.UTC(
       reference.getUTCFullYear() - EVOLUTION_LOOKBACK_YEARS,
