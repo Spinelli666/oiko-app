@@ -127,6 +127,8 @@ function CategoryBreakdownList({
   );
 }
 
+type Filter = "receitas" | "despesas" | null;
+
 export function CategoryBreakdown({
   income,
   expenses,
@@ -134,31 +136,71 @@ export function CategoryBreakdown({
   income: BreakdownNode[];
   expenses: BreakdownNode[];
 }) {
+  const [filter, setFilter] = useState<Filter>(null);
+
+  const showReceitas = filter !== "despesas";
+  const showDespesas = filter !== "receitas";
+
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <p className="mb-3 text-sm font-medium text-text-secondary">
-          Receitas por categoria
-        </p>
-        {income.length === 0 ? (
-          <p className="text-text-secondary">
-            Nenhuma receita lançada neste mês ainda.
-          </p>
-        ) : (
-          <CategoryBreakdownList nodes={income} isExpense={false} />
-        )}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => setFilter((f) => (f === "receitas" ? null : "receitas"))}
+          className={
+            filter === "receitas"
+              ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+              : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+          }
+        >
+          Receitas
+        </button>
+        <button
+          type="button"
+          onClick={() => setFilter((f) => (f === "despesas" ? null : "despesas"))}
+          className={
+            filter === "despesas"
+              ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+              : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+          }
+        >
+          Despesas
+        </button>
       </div>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
-        <p className="mb-3 text-sm font-medium text-text-secondary">
-          Despesas por categoria
-        </p>
-        {expenses.length === 0 ? (
-          <p className="text-text-secondary">
-            Nenhuma despesa lançada neste mês ainda.
-          </p>
-        ) : (
-          <CategoryBreakdownList nodes={expenses} isExpense={true} />
+      <div
+        className={`grid grid-cols-1 gap-6 ${
+          showReceitas && showDespesas ? "lg:grid-cols-2" : ""
+        }`}
+      >
+        {showReceitas && (
+          <div className="animate-fade-in rounded-lg border border-text-secondary/20 bg-surface p-6">
+            <p className="mb-3 text-sm font-medium text-text-secondary">
+              Receitas por categoria
+            </p>
+            {income.length === 0 ? (
+              <p className="text-text-secondary">
+                Nenhuma receita lançada neste mês ainda.
+              </p>
+            ) : (
+              <CategoryBreakdownList nodes={income} isExpense={false} />
+            )}
+          </div>
+        )}
+
+        {showDespesas && (
+          <div className="animate-fade-in rounded-lg border border-text-secondary/20 bg-surface p-6">
+            <p className="mb-3 text-sm font-medium text-text-secondary">
+              Despesas por categoria
+            </p>
+            {expenses.length === 0 ? (
+              <p className="text-text-secondary">
+                Nenhuma despesa lançada neste mês ainda.
+              </p>
+            ) : (
+              <CategoryBreakdownList nodes={expenses} isExpense={true} />
+            )}
+          </div>
         )}
       </div>
     </div>
