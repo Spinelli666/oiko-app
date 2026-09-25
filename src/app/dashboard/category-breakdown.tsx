@@ -54,7 +54,7 @@ function CategoryBreakdownList({
     <ul className="flex flex-col gap-3">
       {nodes.map((node, index) => {
         const isExpanded = expandedIds.has(node.categoryId);
-        const colorClass = categoryColorByIndex(index);
+        const colorClass = categoryColorByIndex(index, isExpense);
         return (
           <li key={node.categoryId} className="flex flex-col gap-1">
             <div className="flex items-center justify-between gap-3">

@@ -15,6 +15,12 @@
   --cat-4: #8a5a35;
   --cat-5: #9c7a1f;
   --cat-6: #55707a;
+  --cat-green-1: #6b7a3a;
+  --cat-green-2: #4a7a3f;
+  --cat-green-3: #2f7a52;
+  --cat-green-4: #257d78;
+  --cat-green-5: #7a8f2e;
+  --cat-green-6: #3f6b4f;
 }
 
 @theme inline {
@@ -32,6 +38,12 @@
   --color-cat-4: var(--cat-4);
   --color-cat-5: var(--cat-5);
   --color-cat-6: var(--cat-6);
+  --color-cat-green-1: var(--cat-green-1);
+  --color-cat-green-2: var(--cat-green-2);
+  --color-cat-green-3: var(--cat-green-3);
+  --color-cat-green-4: var(--cat-green-4);
+  --color-cat-green-5: var(--cat-green-5);
+  --color-cat-green-6: var(--cat-green-6);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -52,6 +64,12 @@
     --cat-4: #c0885a;
     --cat-5: #d1ab4f;
     --cat-6: #8fa9b3;
+    --cat-green-1: #9aae5c;
+    --cat-green-2: #82b374;
+    --cat-green-3: #6bbf94;
+    --cat-green-4: #5fbdb5;
+    --cat-green-5: #b8cf6a;
+    --cat-green-6: #7fa88f;
   }
 }
 
