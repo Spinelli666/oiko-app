@@ -132,6 +132,38 @@ export function computeEvolution(
   });
 }
 
+/** Same bucketing as `computeEvolution`, but keeps each bucket's totals
+ * broken down by category instead of collapsed into receitas/despesas. Each
+ * bucket's map holds the signed sum of amounts per categoryId (positive for
+ * receitas, negative for despesas), so callers can take `Math.abs` per the
+ * category's known kind. Transactions outside the bucket range are
+ * ignored. */
+export function computeEvolutionByCategory(
+  transactions: Array<{ date: Date; amount: number; categoryId: string }>,
+  buckets: Date[],
+  granularity: Granularity
+): Array<{ bucketStart: Date; totals: Map<string, number> }> {
+  const key = (d: Date) => d.getTime();
+  const bucketTotals = new Map<number, Map<string, number>>(
+    buckets.map((b) => [key(b), new Map<string, number>()])
+  );
+
+  for (const transaction of transactions) {
+    const transactionBucket = bucketStart(transaction.date, granularity);
+    const totals = bucketTotals.get(key(transactionBucket));
+    if (!totals) continue;
+    totals.set(
+      transaction.categoryId,
+      (totals.get(transaction.categoryId) ?? 0) + transaction.amount
+    );
+  }
+
+  return buckets.map((start) => ({
+    bucketStart: start,
+    totals: bucketTotals.get(key(start))!,
+  }));
+}
+
 const DEFAULT_BUCKETS_BACK: Record<Granularity, number> = {
   diario: 13, // últimos 14 dias
   semanal: 7, // últimas 8 semanas

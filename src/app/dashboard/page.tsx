@@ -105,6 +105,13 @@ export default async function DashboardPage() {
   const evolutionTransactions = allTransactions.map((t) => ({
     date: t.date,
     amount: Number(t.amount),
+    categoryId: t.categoryId,
+  }));
+
+  const evolutionCategories = categories.map((c) => ({
+    id: c.id,
+    name: c.name,
+    kind: c.kind,
   }));
 
   const budgetByCategory = new Map(
@@ -214,7 +221,10 @@ export default async function DashboardPage() {
           <p className="mb-3 text-sm font-medium text-text-secondary">
             Evolução
           </p>
-          <EvolutionSection transactions={evolutionTransactions} />
+          <EvolutionSection
+            transactions={evolutionTransactions}
+            categories={evolutionCategories}
+          />
         </div>
 
         <CategoryBreakdown income={incomeNodes} expenses={expenseNodes} />

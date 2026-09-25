@@ -4,10 +4,11 @@ import { useMemo, useState } from "react";
 import {
   bucketsInRange,
   computeEvolution,
+  computeEvolutionByCategory,
   defaultRangeFor,
   type Granularity,
 } from "@/lib/evolution";
-import { EvolutionChart } from "./evolution-chart";
+import { EvolutionChart, type EvolutionCategory } from "./evolution-chart";
 
 const GRANULARITY_OPTIONS: Array<{ value: Granularity; label: string }> = [
   { value: "diario", label: "Diário" },
@@ -27,21 +28,39 @@ function parseDateInputValue(value: string) {
 
 export function EvolutionSection({
   transactions,
+  categories,
 }: {
-  transactions: Array<{ date: Date; amount: number }>;
+  transactions: Array<{ date: Date; amount: number; categoryId: string }>;
+  categories: EvolutionCategory[];
 }) {
   const [granularity, setGranularity] = useState<Granularity>("mensal");
+  const [viewMode, setViewMode] = useState<"total" | "categorias">("total");
   const [customRange, setCustomRange] = useState<{ from: Date; to: Date } | null>(
     null
   );
   const [rangeError, setRangeError] = useState<string | null>(null);
 
+  // No "Diário" a divisão por categoria é a única forma exibida: um total
+  // agregado por dia teria pouco valor, e o volume de barras é pequeno o
+  // suficiente para caber lado a lado.
+  const effectiveViewMode = granularity === "diario" ? "categorias" : viewMode;
+
   const range = customRange ?? defaultRangeFor(granularity);
 
-  const data = useMemo(() => {
-    const buckets = bucketsInRange(range.from, range.to, granularity);
-    return computeEvolution(transactions, buckets, granularity);
-  }, [transactions, range, granularity]);
+  const buckets = useMemo(
+    () => bucketsInRange(range.from, range.to, granularity),
+    [range, granularity]
+  );
+
+  const data = useMemo(
+    () => computeEvolution(transactions, buckets, granularity),
+    [transactions, buckets, granularity]
+  );
+
+  const categoryData = useMemo(
+    () => computeEvolutionByCategory(transactions, buckets, granularity),
+    [transactions, buckets, granularity]
+  );
 
   function selectGranularity(next: Granularity) {
     setGranularity(next);
@@ -90,6 +109,33 @@ export function EvolutionSection({
           </button>
         ))}
       </div>
+
+      {granularity !== "diario" && (
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setViewMode("total")}
+            className={
+              viewMode === "total"
+                ? "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white active:scale-95"
+                : "rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+            }
+          >
+            Total
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("categorias")}
+            className={
+              viewMode === "categorias"
+                ? "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white active:scale-95"
+                : "rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+            }
+          >
+            Por categoria
+          </button>
+        </div>
+      )}
 
       <form
         key={formKey}
@@ -146,7 +192,13 @@ export function EvolutionSection({
         </p>
       )}
 
-      <EvolutionChart data={data} granularity={granularity} />
+      <EvolutionChart
+        data={data}
+        granularity={granularity}
+        viewMode={effectiveViewMode}
+        categoryData={categoryData}
+        categories={categories}
+      />
     </div>
   );
 }
