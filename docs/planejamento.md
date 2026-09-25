@@ -81,6 +81,7 @@ Objetivo: reduzir o atrito de uso no dia a dia.
 Objetivo: se fizer sentido pro seu caso de uso (ex: uso compartilhado com outra pessoa, ou automação total).
 
 - Múltiplos usuários/perfis (ex: gestão financeira familiar)
+- **Fuso horário por usuário:** hoje "hoje" é calculado fixo em `America/Sao_Paulo` ([src/lib/dates.ts](../src/lib/dates.ts)), proposital enquanto o app é de uso pessoal (evita o bug de datas trocadas perto da meia-noite UTC). Antes de liberar pra gente fora do Brasil, trocar por um campo `timezone` em `User` (detectado no cadastro, editável depois) e usar esse valor em vez da constante fixa em `todayInAppTimezone()`.
 - Integração via Open Finance (importação automática de transações bancárias)
 - **Investimentos**: acompanhamento de carteira — ações, fundos, renda fixa
 - **Conexão com corretoras/B3**: viável, mas com ressalva — a B3 não oferece API pública direta pra portfólio de pessoa física. O caminho realista é: (a) módulo de investimentos do **Open Finance** (regulado pelo Banco Central, já cobre dados de investimento desde 2023) ou (b) API específica de cada corretora, quando disponível. Definir isso na hora, dependendo de quais corretoras forem relevantes pra você
