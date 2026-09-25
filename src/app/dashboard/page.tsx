@@ -11,7 +11,7 @@ import {
 } from "@/lib/transactions";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { BudgetAlertBanner } from "./budget-alert-banner";
-import { CategoryBreakdownTabs, type BreakdownNode } from "./category-breakdown-tabs";
+import { CategoryBreakdown, type BreakdownNode } from "./category-breakdown";
 import { EvolutionSection } from "./evolution-section";
 
 const EVOLUTION_LOOKBACK_YEARS = 5;
@@ -216,7 +216,7 @@ export default async function DashboardPage() {
           <EvolutionSection transactions={evolutionTransactions} />
         </div>
 
-        <CategoryBreakdownTabs income={incomeNodes} expenses={expenseNodes} />
+        <CategoryBreakdown income={incomeNodes} expenses={expenseNodes} />
       </div>
     </div>
   );
