@@ -2,7 +2,6 @@
 
 import { useActionState, useRef } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
-import { CurrencyInput } from "@/components/currency-input";
 import { todayInAppTimezone } from "@/lib/dates";
 import { createRecurringTransactionAction } from "./actions";
 import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
@@ -66,10 +65,14 @@ export function AddRecurringTransactionForm({
           <label htmlFor="amount" className="text-sm font-medium">
             Valor
           </label>
-          <CurrencyInput
+          <input
             id="amount"
             name="amount"
+            type="number"
+            step="0.01"
+            min="0.01"
             required
+            placeholder="0,00"
             className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
           />
         </div>

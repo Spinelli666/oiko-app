@@ -4,7 +4,6 @@ import { useActionState, useState } from "react";
 import Image from "next/image";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import type { TransactionGetPayload } from "@/generated/prisma/models/Transaction";
-import { CurrencyInput } from "@/components/currency-input";
 import { Dialog } from "@/components/dialog";
 import { deleteTransactionAction, updateTransactionAction } from "./actions";
 import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
@@ -75,8 +74,11 @@ export function TransactionRow({
             ))}
           </select>
 
-          <CurrencyInput
+          <input
             name="amount"
+            type="number"
+            step="0.01"
+            min="0.01"
             required
             defaultValue={Math.abs(amount)}
             className="rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 outline-none focus:border-primary"
@@ -207,9 +209,12 @@ export function TransactionRow({
                 >
                   Valor
                 </label>
-                <CurrencyInput
+                <input
                   id={`amount-${transaction.id}`}
                   name="amount"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
                   required
                   defaultValue={Math.abs(amount)}
                   className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"

@@ -2,7 +2,6 @@
 
 import { useActionState } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
-import { CurrencyInput } from "@/components/currency-input";
 import { computeBudgetStatus } from "@/lib/budget-status";
 import { removeBudgetAction, setBudgetAction } from "./actions";
 
@@ -62,8 +61,11 @@ export function BudgetRow({
       <div className="flex items-center gap-2">
         <form action={formAction} className="flex items-center gap-2">
           <input type="hidden" name="categoryId" value={category.id} />
-          <CurrencyInput
+          <input
             name="limitAmount"
+            type="number"
+            step="0.01"
+            min="0.01"
             required
             placeholder="Definir limite"
             defaultValue={limitAmount}

@@ -4,7 +4,6 @@ import { useActionState, useState } from "react";
 import Image from "next/image";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import type { RecurringTransactionGetPayload } from "@/generated/prisma/models/RecurringTransaction";
-import { CurrencyInput } from "@/components/currency-input";
 import {
   deleteRecurringTransactionAction,
   toggleRecurringTransactionAction,
@@ -75,8 +74,11 @@ export function RecurringTransactionRow({
             ))}
           </select>
 
-          <CurrencyInput
+          <input
             name="amount"
+            type="number"
+            step="0.01"
+            min="0.01"
             required
             defaultValue={recurringTransaction.amount}
             className="rounded-md border border-text-secondary/30 bg-surface px-3 py-1.5 outline-none focus:border-primary"
