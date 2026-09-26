@@ -209,6 +209,12 @@ export function CategoryBreakdown({
           >
             Orçamento
           </Link>
+          <Link
+            href="/dashboard/bills"
+            className="cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+          >
+            Contas a pagar
+          </Link>
         </div>
       </div>
 

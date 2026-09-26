@@ -27,6 +27,14 @@ import {
   getRecurringTransactionsForUser,
   updateRecurringTransaction,
 } from "@/lib/recurring-transactions";
+import {
+  BillNotFoundError,
+  createBill,
+  deleteBill,
+  getBillsForUser,
+  markBillAsPaid,
+  updateBill,
+} from "@/lib/bills";
 
 /** Integration tests hitting the real (local) database — this is the most
  * important suite per the project plan: a user must never be able to read,
@@ -322,6 +330,110 @@ describe("isolamento entre usuários", () => {
         description: "Tentativa do usuário B",
         amount: 10,
         startDate: startOfCurrentMonth(),
+      })
+    ).rejects.toBeInstanceOf(CategoryNotFoundError);
+  });
+
+  it("usuário B não vê contas a pagar do usuário A na listagem", async () => {
+    const categoryA = await createCategory({
+      userId: userAId,
+      name: "Categoria A - conta listagem",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+    const billA = await createBill({
+      userId: userAId,
+      categoryId: categoryA.id,
+      description: "Fatura do usuário A",
+      amount: 200,
+      dueDate: startOfCurrentMonth(),
+    });
+
+    const billsForB = await getBillsForUser(userBId);
+
+    expect(billsForB.find((b) => b.id === billA.id)).toBeUndefined();
+  });
+
+  it("usuário B não consegue editar nem excluir uma conta a pagar do usuário A", async () => {
+    const categoryA = await createCategory({
+      userId: userAId,
+      name: "Categoria A - editar conta",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+    const categoryB = await createCategory({
+      userId: userBId,
+      name: "Categoria B - editar conta",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+    const billA = await createBill({
+      userId: userAId,
+      categoryId: categoryA.id,
+      description: "Conta original",
+      amount: 100,
+      dueDate: startOfCurrentMonth(),
+    });
+
+    await expect(
+      updateBill({
+        id: billA.id,
+        userId: userBId,
+        categoryId: categoryB.id,
+        description: "Sequestrada",
+        amount: 999,
+        dueDate: startOfCurrentMonth(),
+        repeatsMonthly: false,
+      })
+    ).rejects.toBeInstanceOf(BillNotFoundError);
+
+    await expect(
+      deleteBill({ id: billA.id, userId: userBId })
+    ).rejects.toBeInstanceOf(BillNotFoundError);
+
+    const stillThere = await prisma.bill.findUnique({ where: { id: billA.id } });
+    expect(stillThere).not.toBeNull();
+    expect(stillThere?.description).toBe("Conta original");
+  });
+
+  it("usuário B não consegue marcar como paga uma conta a pagar do usuário A", async () => {
+    const categoryA = await createCategory({
+      userId: userAId,
+      name: "Categoria A - pagar conta",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+    const billA = await createBill({
+      userId: userAId,
+      categoryId: categoryA.id,
+      description: "Conta a pagar do usuário A",
+      amount: 150,
+      dueDate: startOfCurrentMonth(),
+    });
+
+    await expect(
+      markBillAsPaid({ id: billA.id, userId: userBId })
+    ).rejects.toBeInstanceOf(BillNotFoundError);
+
+    const stillPending = await prisma.bill.findUnique({ where: { id: billA.id } });
+    expect(stillPending?.status).toBe("PENDENTE");
+  });
+
+  it("usuário B não consegue cadastrar uma conta a pagar usando uma categoria do usuário A", async () => {
+    const categoryA = await createCategory({
+      userId: userAId,
+      name: "Categoria A - roubo conta",
+      type: "ESSENCIAL",
+      kind: "DESPESA",
+    });
+
+    await expect(
+      createBill({
+        userId: userBId,
+        categoryId: categoryA.id,
+        description: "Tentativa do usuário B",
+        amount: 10,
+        dueDate: startOfCurrentMonth(),
       })
     ).rejects.toBeInstanceOf(CategoryNotFoundError);
   });
