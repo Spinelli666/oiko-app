@@ -99,7 +99,7 @@ export function EvolutionSection({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2">
           {GRANULARITY_OPTIONS.map((option) => (
             <button
@@ -123,9 +123,9 @@ export function EvolutionSection({
             action={handleCustomRangeSubmit}
             className="ml-auto flex flex-wrap items-end gap-2"
           >
-            <div className="flex flex-col gap-1">
-              <label htmlFor="evolution-from" className="text-xs text-text-secondary">
-                De
+            <div className="flex items-center gap-2">
+              <label htmlFor="evolution-from" className="text-sm text-text-secondary">
+                De:
               </label>
               <input
                 id="evolution-from"
@@ -135,9 +135,9 @@ export function EvolutionSection({
                 className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
               />
             </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="evolution-to" className="text-xs text-text-secondary">
-                Até
+            <div className="flex items-center gap-2">
+              <label htmlFor="evolution-to" className="text-sm text-text-secondary">
+                Até:
               </label>
               <input
                 id="evolution-to"
