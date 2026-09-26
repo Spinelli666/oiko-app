@@ -21,7 +21,7 @@ export function OrcamentoList({ rows }: { rows: BudgetRowData[] }) {
 
   return (
     <>
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-4">
+      <div className="rounded-lg border border-text-secondary/20 bg-surface p-3">
         <label htmlFor="budget-search" className="sr-only">
           Pesquisar categoria
         </label>
@@ -35,7 +35,7 @@ export function OrcamentoList({ rows }: { rows: BudgetRowData[] }) {
         />
       </div>
 
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
+      <div className="rounded-lg border border-text-secondary/20 bg-surface p-5">
         {filtered.length === 0 ? (
           <p className="text-text-secondary">
             {rows.length === 0
@@ -43,7 +43,7 @@ export function OrcamentoList({ rows }: { rows: BudgetRowData[] }) {
               : "Nenhuma categoria encontrada."}
           </p>
         ) : (
-          <ul className="flex flex-col gap-4">
+          <ul className="lg:columns-2 lg:gap-x-6">
             {filtered.map((row) => (
               <BudgetRow
                 key={row.category.id}

@@ -3,8 +3,8 @@ import { OrcamentoContent } from "./orcamento-content";
 
 export default function OrcamentoPage() {
   return (
-    <div className="flex flex-1 flex-col px-4 py-16">
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+    <div className="flex flex-1 flex-col px-4 py-10">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
         <div className="flex justify-end">
           <Link
             href="/dashboard"

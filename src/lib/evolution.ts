@@ -165,7 +165,7 @@ export function computeEvolutionByCategory(
 }
 
 const DEFAULT_BUCKETS_BACK: Record<Granularity, number> = {
-  diario: 13, // últimos 14 dias
+  diario: 6, // últimos 7 dias
   semanal: 7, // últimas 8 semanas
   mensal: 5, // últimos 6 meses
   anual: 4, // últimos 5 anos

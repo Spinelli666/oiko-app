@@ -30,7 +30,7 @@ export function CategoriesList({
 
   return (
     <>
-      <div className="rounded-lg border border-text-secondary/20 bg-surface p-4">
+      <div className="rounded-lg border border-text-secondary/20 bg-surface p-3">
         <label htmlFor="category-search" className="sr-only">
           Pesquisar categorias
         </label>
@@ -47,7 +47,7 @@ export function CategoriesList({
       {children}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
+        <div className="rounded-lg border border-text-secondary/20 bg-surface p-5">
           <h2 className="mb-3 text-lg font-semibold">Receitas</h2>
           {filteredReceitas.length === 0 ? (
             <p className="text-text-secondary">
@@ -56,7 +56,7 @@ export function CategoriesList({
                 : "Nenhuma categoria encontrada."}
             </p>
           ) : (
-            <ul>
+            <ul className="lg:columns-2 lg:gap-x-6">
               {filteredReceitas.map((category) => (
                 <CategoryRow
                   key={category.id}
@@ -69,7 +69,7 @@ export function CategoriesList({
           )}
         </div>
 
-        <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
+        <div className="rounded-lg border border-text-secondary/20 bg-surface p-5">
           <h2 className="mb-3 text-lg font-semibold">Despesas</h2>
           {filteredDespesas.length === 0 ? (
             <p className="text-text-secondary">
@@ -78,7 +78,7 @@ export function CategoriesList({
                 : "Nenhuma categoria encontrada."}
             </p>
           ) : (
-            <ul>
+            <ul className="lg:columns-2 lg:gap-x-6">
               {filteredDespesas.map((category) => (
                 <CategoryRow
                   key={category.id}

@@ -3,8 +3,8 @@ import { CategoriesContent } from "./categories-content";
 
 export default function CategoriasPage() {
   return (
-    <div className="flex flex-1 flex-col px-4 py-16">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+    <div className="flex flex-1 flex-col px-4 py-10">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
         <div className="flex justify-end">
           <Link
             href="/dashboard"

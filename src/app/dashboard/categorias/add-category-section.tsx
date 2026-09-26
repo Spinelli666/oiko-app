@@ -8,7 +8,7 @@ export function AddCategorySection() {
   const [kind, setKind] = useState<CategoryKind | null>(null);
 
   return (
-    <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
+    <div className="rounded-lg border border-text-secondary/20 bg-surface p-4">
       {kind ? (
         <AddCategoryForm key={kind} kind={kind} onDone={() => setKind(null)} />
       ) : (

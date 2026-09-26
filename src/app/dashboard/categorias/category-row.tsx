@@ -48,7 +48,7 @@ export function CategoryRow({
   );
 
   return (
-    <li className="flex flex-col gap-2 border-b border-text-secondary/10 py-3">
+    <li className="flex flex-col gap-2 break-inside-avoid-column border-b border-text-secondary/10 py-2.5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="font-medium">

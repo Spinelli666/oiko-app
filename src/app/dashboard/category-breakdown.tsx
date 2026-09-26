@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { categoryColorByIndex } from "@/lib/category-colors";
 import { TransactionRow, type TransactionWithCategory } from "./transacoes/transaction-row";
@@ -122,41 +123,93 @@ export function CategoryBreakdown({
   income,
   expenses,
   categories,
+  recurringCategoryIds,
 }: {
   income: BreakdownNode[];
   expenses: BreakdownNode[];
   categories: CategoryModel[];
+  recurringCategoryIds: string[];
 }) {
   const [filter, setFilter] = useState<Filter>(null);
+  const [onlyRecurring, setOnlyRecurring] = useState(false);
 
   const showReceitas = filter !== "despesas";
   const showDespesas = filter !== "receitas";
 
+  const recurringSet = new Set(recurringCategoryIds);
+  const visibleIncome = onlyRecurring
+    ? income.filter((node) => recurringSet.has(node.categoryId))
+    : income;
+  const visibleExpenses = onlyRecurring
+    ? expenses.filter((node) => recurringSet.has(node.categoryId))
+    : expenses;
+
+  const emptyReceitasMessage = onlyRecurring
+    ? "Nenhuma categoria de receita com transação recorrente."
+    : "Nenhuma receita lançada neste mês ainda.";
+  const emptyDespesasMessage = onlyRecurring
+    ? "Nenhuma categoria de despesa com transação recorrente."
+    : "Nenhuma despesa lançada neste mês ainda.";
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setFilter((f) => (f === "receitas" ? null : "receitas"))}
-          className={
-            filter === "receitas"
-              ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
-              : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
-          }
-        >
-          Receitas
-        </button>
-        <button
-          type="button"
-          onClick={() => setFilter((f) => (f === "despesas" ? null : "despesas"))}
-          className={
-            filter === "despesas"
-              ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
-              : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
-          }
-        >
-          Despesas
-        </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setFilter((f) => (f === "receitas" ? null : "receitas"))}
+            className={
+              filter === "receitas"
+                ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+                : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+            }
+          >
+            Receitas
+          </button>
+          <button
+            type="button"
+            onClick={() => setFilter((f) => (f === "despesas" ? null : "despesas"))}
+            className={
+              filter === "despesas"
+                ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+                : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+            }
+          >
+            Despesas
+          </button>
+          <button
+            type="button"
+            onClick={() => setOnlyRecurring((v) => !v)}
+            className={
+              onlyRecurring
+                ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+                : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+            }
+          >
+            Recorrentes
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/dashboard/transacoes"
+            className="cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary/90 active:scale-95"
+          >
+            Lançar Transação
+          </Link>
+          <Link
+            href="/dashboard/categorias"
+            className="cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+          >
+            Categorias
+          </Link>
+          <Link
+            href="/dashboard/orcamento"
+            className="cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+          >
+            Orçamento
+          </Link>
+        </div>
       </div>
 
       <div
@@ -169,13 +222,11 @@ export function CategoryBreakdown({
             <p className="mb-3 text-sm font-medium text-text-secondary">
               Receitas por categoria
             </p>
-            {income.length === 0 ? (
-              <p className="text-text-secondary">
-                Nenhuma receita lançada neste mês ainda.
-              </p>
+            {visibleIncome.length === 0 ? (
+              <p className="text-text-secondary">{emptyReceitasMessage}</p>
             ) : (
               <CategoryBreakdownList
-                nodes={income}
+                nodes={visibleIncome}
                 isExpense={false}
                 categories={categories}
               />
@@ -188,13 +239,11 @@ export function CategoryBreakdown({
             <p className="mb-3 text-sm font-medium text-text-secondary">
               Despesas por categoria
             </p>
-            {expenses.length === 0 ? (
-              <p className="text-text-secondary">
-                Nenhuma despesa lançada neste mês ainda.
-              </p>
+            {visibleExpenses.length === 0 ? (
+              <p className="text-text-secondary">{emptyDespesasMessage}</p>
             ) : (
               <CategoryBreakdownList
-                nodes={expenses}
+                nodes={visibleExpenses}
                 isExpense={true}
                 categories={categories}
               />

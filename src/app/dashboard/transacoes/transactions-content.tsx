@@ -15,10 +15,12 @@ export async function TransactionsContent({
   monthReference,
   withMonthNav = false,
   showTransactionsList = true,
+  title = "Transações",
 }: {
   monthReference?: Date;
   withMonthNav?: boolean;
   showTransactionsList?: boolean;
+  title?: string;
 } = {}) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -38,7 +40,7 @@ export async function TransactionsContent({
   if (categories.length === 0) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold">Transações</h1>
+        <h1 className="text-2xl font-semibold">{title}</h1>
         <p className="text-text-secondary">
           Você precisa criar pelo menos uma categoria antes de lançar uma
           transação.
@@ -56,7 +58,7 @@ export async function TransactionsContent({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Transações</h1>
+        <h1 className="text-2xl font-semibold">{title}</h1>
         {withMonthNav && <MonthNav monthReference={effectiveMonth} />}
       </div>
 

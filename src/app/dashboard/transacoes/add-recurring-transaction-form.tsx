@@ -2,9 +2,9 @@
 
 import { useActionState, useRef } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
+import { CategoryPickerField } from "@/components/category-picker-field";
 import { todayInAppTimezone } from "@/lib/dates";
 import { createRecurringTransactionAction } from "./actions";
-import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
 
 export function AddRecurringTransactionForm({
   categories,
@@ -47,18 +47,7 @@ export function AddRecurringTransactionForm({
           <label htmlFor="categoryId" className="text-sm font-medium">
             Categoria
           </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            required
-            className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
-          >
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name} ({CATEGORY_KIND_LABELS[category.kind]})
-              </option>
-            ))}
-          </select>
+          <CategoryPickerField id="categoryId" name="categoryId" categories={categories} />
         </div>
 
         <div className="flex flex-col gap-1">

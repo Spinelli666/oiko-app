@@ -194,11 +194,11 @@ describe("computeEvolution", () => {
 });
 
 describe("defaultRangeFor", () => {
-  it("diario: últimos 14 dias terminando hoje", () => {
+  it("diario: últimos 7 dias terminando hoje", () => {
     const reference = new Date(Date.UTC(2026, 8, 19));
     const { from, to } = defaultRangeFor("diario", reference);
 
-    expect(from.toISOString()).toBe("2026-09-06T00:00:00.000Z");
+    expect(from.toISOString()).toBe("2026-09-13T00:00:00.000Z");
     expect(to).toBe(reference);
   });
 

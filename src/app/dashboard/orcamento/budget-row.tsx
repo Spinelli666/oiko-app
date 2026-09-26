@@ -37,7 +37,7 @@ export function BudgetRow({
       : "text-text-secondary";
 
   return (
-    <li className="flex flex-col gap-2 border-b border-text-secondary/10 pb-4 last:border-0 last:pb-0">
+    <li className="mb-3 flex flex-col gap-2 break-inside-avoid-column border-b border-text-secondary/10 pb-3 last:mb-0 last:border-0 last:pb-0">
       <div className="flex items-center justify-between">
         <span className="font-medium">{category.name}</span>
         <span className={statusColor}>

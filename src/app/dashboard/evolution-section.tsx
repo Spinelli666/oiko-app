@@ -45,7 +45,10 @@ export function EvolutionSection({
   // suficiente para caber lado a lado.
   const effectiveViewMode = granularity === "diario" ? "categorias" : viewMode;
 
-  const range = customRange ?? defaultRangeFor(granularity);
+  // O Diário é sempre travado nos últimos 7 dias: ignora o período
+  // customizado para não permitir uma janela maior nessa granularidade.
+  const range =
+    granularity === "diario" ? defaultRangeFor(granularity) : customRange ?? defaultRangeFor(granularity);
 
   const buckets = useMemo(
     () => bucketsInRange(range.from, range.to, granularity),
@@ -137,56 +140,58 @@ export function EvolutionSection({
         </div>
       )}
 
-      <form
-        key={formKey}
-        action={handleCustomRangeSubmit}
-        className="flex flex-wrap items-end gap-2"
-      >
-        <div className="flex flex-col gap-1">
-          <label htmlFor="evolution-from" className="text-xs text-text-secondary">
-            De
-          </label>
-          <input
-            id="evolution-from"
-            name="from"
-            type="date"
-            defaultValue={toDateInputValue(range.from)}
-            className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="evolution-to" className="text-xs text-text-secondary">
-            Até
-          </label>
-          <input
-            id="evolution-to"
-            name="to"
-            type="date"
-            defaultValue={toDateInputValue(range.to)}
-            className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
-          />
-        </div>
-        <button
-          type="submit"
-          className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+      {granularity !== "diario" && (
+        <form
+          key={formKey}
+          action={handleCustomRangeSubmit}
+          className="flex flex-wrap items-end gap-2"
         >
-          Filtrar
-        </button>
-        {customRange && (
+          <div className="flex flex-col gap-1">
+            <label htmlFor="evolution-from" className="text-xs text-text-secondary">
+              De
+            </label>
+            <input
+              id="evolution-from"
+              name="from"
+              type="date"
+              defaultValue={toDateInputValue(range.from)}
+              className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="evolution-to" className="text-xs text-text-secondary">
+              Até
+            </label>
+            <input
+              id="evolution-to"
+              name="to"
+              type="date"
+              defaultValue={toDateInputValue(range.to)}
+              className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
+            />
+          </div>
           <button
-            type="button"
-            onClick={() => {
-              setCustomRange(null);
-              setRangeError(null);
-            }}
+            type="submit"
             className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
           >
-            Limpar período
+            Filtrar
           </button>
-        )}
-      </form>
+          {customRange && (
+            <button
+              type="button"
+              onClick={() => {
+                setCustomRange(null);
+                setRangeError(null);
+              }}
+              className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+            >
+              Limpar período
+            </button>
+          )}
+        </form>
+      )}
 
-      {rangeError && (
+      {granularity !== "diario" && rangeError && (
         <p className="text-sm text-alert" role="alert">
           {rangeError}
         </p>

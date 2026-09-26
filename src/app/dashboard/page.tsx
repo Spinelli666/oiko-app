@@ -1,11 +1,13 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { computeBudgetAlerts } from "@/lib/budget-status";
 import { getCategoriesForUser, splitCategoriesByKind } from "@/lib/categories";
 import { todayInAppTimezone } from "@/lib/dates";
-import { ensureRecurringTransactionsGenerated } from "@/lib/recurring-transactions";
+import {
+  ensureRecurringTransactionsGenerated,
+  getRecurringTransactionsForUser,
+} from "@/lib/recurring-transactions";
 import {
   getTransactionsForUserSince,
   startOfCurrentMonth,
@@ -80,11 +82,17 @@ export default async function DashboardPage() {
 
   await ensureRecurringTransactionsGenerated(session.user.id);
 
-  const [allTransactions, budgets, categories] = await Promise.all([
-    getTransactionsForUserSince(session.user.id, evolutionLookbackStart()),
-    getBudgetsForCurrentMonth(session.user.id),
-    getCategoriesForUser(session.user.id),
-  ]);
+  const [allTransactions, budgets, categories, recurringTransactions] =
+    await Promise.all([
+      getTransactionsForUserSince(session.user.id, evolutionLookbackStart()),
+      getBudgetsForCurrentMonth(session.user.id),
+      getCategoriesForUser(session.user.id),
+      getRecurringTransactionsForUser(session.user.id),
+    ]);
+
+  const recurringCategoryIds = [
+    ...new Set(recurringTransactions.map((rt) => rt.categoryId)),
+  ];
 
   const currentMonth = startOfCurrentMonth();
   const transactions = allTransactions.filter((t) => t.date >= currentMonth);
@@ -169,27 +177,6 @@ export default async function DashboardPage() {
           </form>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/dashboard/transacoes"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
-          >
-            Lançar transação
-          </Link>
-          <Link
-            href="/dashboard/categorias"
-            className="rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium"
-          >
-            Categorias
-          </Link>
-          <Link
-            href="/dashboard/orcamento"
-            className="rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium"
-          >
-            Orçamento
-          </Link>
-        </div>
-
         <BudgetAlertBanner alerts={budgetAlerts} />
 
         <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
@@ -217,6 +204,7 @@ export default async function DashboardPage() {
           income={incomeNodes}
           expenses={expenseNodes}
           categories={categories}
+          recurringCategoryIds={recurringCategoryIds}
         />
       </div>
     </div>
