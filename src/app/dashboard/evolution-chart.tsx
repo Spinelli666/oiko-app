@@ -190,16 +190,6 @@ export function EvolutionChart({
             />
             <Tooltip content={<CategoryTooltip />} />
             <Legend />
-            {despesaCategories.map((category, index) => (
-              <Bar
-                key={category.id}
-                dataKey={category.id}
-                name={category.name}
-                stackId={stacked ? "despesas" : undefined}
-                fill={categoryColorVarByIndex(index, true)}
-                radius={stacked ? undefined : [4, 4, 0, 0]}
-              />
-            ))}
             {receitaCategories.map((category, index) => (
               <Bar
                 key={category.id}
@@ -207,6 +197,16 @@ export function EvolutionChart({
                 name={category.name}
                 stackId={stacked ? "receitas" : undefined}
                 fill={categoryColorVarByIndex(index, false)}
+                radius={stacked ? undefined : [4, 4, 0, 0]}
+              />
+            ))}
+            {despesaCategories.map((category, index) => (
+              <Bar
+                key={category.id}
+                dataKey={category.id}
+                name={category.name}
+                stackId={stacked ? "despesas" : undefined}
+                fill={categoryColorVarByIndex(index, true)}
                 radius={stacked ? undefined : [4, 4, 0, 0]}
               />
             ))}
@@ -258,6 +258,7 @@ export function EvolutionChart({
               border: "1px solid var(--text-secondary)",
               borderRadius: 8,
             }}
+            labelStyle={{ fontWeight: 600 }}
           />
           <Legend />
           <Bar dataKey="Receitas" fill="var(--success)" radius={[4, 4, 0, 0]} />

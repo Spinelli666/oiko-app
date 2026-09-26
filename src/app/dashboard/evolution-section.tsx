@@ -191,7 +191,7 @@ export function EvolutionSection({
                 : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
             }
           >
-            Por categoria
+            Por Categorias
           </button>
         </div>
       )}
