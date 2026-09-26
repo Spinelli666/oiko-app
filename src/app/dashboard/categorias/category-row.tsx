@@ -119,14 +119,14 @@ export function CategoryRow({
               <button
                 type="submit"
                 disabled={isDeletePending}
-                className="w-fit rounded-md bg-alert px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+                className="w-fit cursor-pointer rounded-md bg-alert px-3 py-1.5 text-sm font-medium text-white transition hover:bg-alert/90 active:scale-95 disabled:cursor-default disabled:active:scale-100 disabled:opacity-60"
               >
                 {isDeletePending ? "Excluindo..." : "Confirmar exclusão"}
               </button>
               <button
                 type="button"
                 onClick={() => setIsConfirmingDelete(false)}
-                className="w-fit rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
+                className="w-fit cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
               >
                 Cancelar
               </button>
@@ -205,14 +205,14 @@ export function CategoryRow({
               <button
                 type="submit"
                 disabled={isEditPending}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+                className="cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary/90 active:scale-95 disabled:cursor-default disabled:active:scale-100 disabled:opacity-60"
               >
                 {isEditPending ? "Salvando..." : "Salvar"}
               </button>
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium"
+                className="cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
               >
                 Cancelar
               </button>

@@ -69,7 +69,7 @@ export function RegisterForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="mt-2 rounded-md bg-primary px-4 py-2 font-medium text-white transition-opacity disabled:opacity-60"
+        className="mt-2 cursor-pointer rounded-md bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 active:scale-95 disabled:cursor-default disabled:active:scale-100 disabled:opacity-60"
       >
         {isPending ? "Criando conta..." : "Criar conta"}
       </button>

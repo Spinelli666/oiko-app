@@ -74,7 +74,7 @@ export function BudgetRow({
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+            className="cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition hover:bg-primary/90 active:scale-95 disabled:cursor-default disabled:active:scale-100 disabled:opacity-60"
           >
             Salvar
           </button>
@@ -85,7 +85,7 @@ export function BudgetRow({
             <input type="hidden" name="id" value={budgetId} />
             <button
               type="submit"
-              className="rounded-md border border-alert/40 px-3 py-1.5 text-sm font-medium text-alert"
+              className="cursor-pointer rounded-md border border-alert/40 px-3 py-1.5 text-sm font-medium text-alert transition hover:bg-alert/10 active:scale-95"
             >
               Remover
             </button>

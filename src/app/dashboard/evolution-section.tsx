@@ -101,8 +101,8 @@ export function EvolutionSection({
             onClick={() => selectGranularity(option.value)}
             className={
               granularity === option.value && !customRange
-                ? "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white"
-                : "rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
+                ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+                : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
             }
           >
             {option.label}
@@ -117,8 +117,8 @@ export function EvolutionSection({
             onClick={() => setViewMode("total")}
             className={
               viewMode === "total"
-                ? "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white active:scale-95"
-                : "rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+                ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+                : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
             }
           >
             Total
@@ -128,8 +128,8 @@ export function EvolutionSection({
             onClick={() => setViewMode("categorias")}
             className={
               viewMode === "categorias"
-                ? "rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white active:scale-95"
-                : "rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+                ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+                : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
             }
           >
             Por categoria
@@ -168,7 +168,7 @@ export function EvolutionSection({
         </div>
         <button
           type="submit"
-          className="rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
+          className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
         >
           Filtrar
         </button>
@@ -179,7 +179,7 @@ export function EvolutionSection({
               setCustomRange(null);
               setRangeError(null);
             }}
-            className="rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium"
+            className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
           >
             Limpar período
           </button>

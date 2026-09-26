@@ -106,7 +106,7 @@ export function AddRecurringTransactionForm({
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-md bg-primary px-4 py-2 font-medium text-white disabled:opacity-60"
+        className="cursor-pointer rounded-md bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 active:scale-95 disabled:cursor-default disabled:active:scale-100 disabled:opacity-60"
       >
         {isPending ? "Salvando..." : "Cadastrar recorrência"}
       </button>

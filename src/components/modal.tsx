@@ -29,7 +29,7 @@ export function Modal({ children }: { children: ReactNode }) {
           type="button"
           onClick={() => router.back()}
           aria-label="Fechar"
-          className="absolute right-4 top-4 text-text-secondary hover:text-foreground"
+          className="absolute right-4 top-4 cursor-pointer text-text-secondary transition-transform hover:text-foreground active:scale-90"
         >
           ✕
         </button>
