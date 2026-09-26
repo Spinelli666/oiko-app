@@ -67,7 +67,7 @@ export async function createTransactionAction(
     throw error;
   }
 
-  revalidatePath("/dashboard/transacoes");
+  revalidatePath("/dashboard/transactions");
   revalidatePath("/dashboard");
 }
 
@@ -95,6 +95,7 @@ export async function updateTransactionAction(
       description: parsed.data.description,
       amount: parsed.data.amount,
       date: new Date(parsed.data.date),
+      makeRecurring: formData.get("makeRecurring") === "on",
     });
   } catch (error) {
     if (error instanceof CategoryNotFoundError) {
@@ -106,7 +107,7 @@ export async function updateTransactionAction(
     throw error;
   }
 
-  revalidatePath("/dashboard/transacoes");
+  revalidatePath("/dashboard/transactions");
   revalidatePath("/dashboard");
 }
 
@@ -126,7 +127,7 @@ export async function deleteTransactionAction(formData: FormData) {
     }
   }
 
-  revalidatePath("/dashboard/transacoes");
+  revalidatePath("/dashboard/transactions");
   revalidatePath("/dashboard");
 }
 
@@ -165,7 +166,7 @@ export async function createRecurringTransactionAction(
     throw error;
   }
 
-  revalidatePath("/dashboard/transacoes");
+  revalidatePath("/dashboard/transactions");
   revalidatePath("/dashboard");
 }
 
@@ -204,7 +205,7 @@ export async function updateRecurringTransactionAction(
     throw error;
   }
 
-  revalidatePath("/dashboard/transacoes");
+  revalidatePath("/dashboard/transactions");
   revalidatePath("/dashboard");
 }
 
@@ -225,7 +226,7 @@ export async function toggleRecurringTransactionAction(formData: FormData) {
     }
   }
 
-  revalidatePath("/dashboard/transacoes");
+  revalidatePath("/dashboard/transactions");
   revalidatePath("/dashboard");
 }
 
@@ -245,6 +246,6 @@ export async function deleteRecurringTransactionAction(formData: FormData) {
     }
   }
 
-  revalidatePath("/dashboard/transacoes");
+  revalidatePath("/dashboard/transactions");
   revalidatePath("/dashboard");
 }

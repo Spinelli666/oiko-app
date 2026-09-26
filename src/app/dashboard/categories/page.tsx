@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CategoriesContent } from "./categories-content";
 
-export default function CategoriasPage() {
+export default function CategoriesPage() {
   return (
     <div className="flex flex-1 flex-col px-4 py-10">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">

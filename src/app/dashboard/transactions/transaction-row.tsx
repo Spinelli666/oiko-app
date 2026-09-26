@@ -4,9 +4,10 @@ import { useActionState, useState } from "react";
 import Image from "next/image";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import type { TransactionGetPayload } from "@/generated/prisma/models/Transaction";
+import { CategoryPickerField } from "@/components/category-picker-field";
 import { Dialog } from "@/components/dialog";
 import { deleteTransactionAction, updateTransactionAction } from "./actions";
-import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
+import { CATEGORY_KIND_LABELS } from "../categories/category-type-labels";
 
 export type TransactionWithCategory = Omit<
   TransactionGetPayload<{ include: { category: true } }>,
@@ -186,19 +187,12 @@ export function TransactionRow({
               >
                 Categoria
               </label>
-              <select
+              <CategoryPickerField
                 id={`category-${transaction.id}`}
                 name="categoryId"
-                required
-                defaultValue={transaction.categoryId}
-                className="rounded-md border border-text-secondary/30 bg-surface px-3 py-2 outline-none focus:border-primary"
-              >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name} ({CATEGORY_KIND_LABELS[category.kind]})
-                  </option>
-                ))}
-              </select>
+                categories={categories}
+                defaultCategoryId={transaction.categoryId}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -238,6 +232,13 @@ export function TransactionRow({
                 />
               </div>
             </div>
+
+            {!transaction.recurringTransactionId && (
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <input type="checkbox" name="makeRecurring" className="cursor-pointer" />
+                Tornar essa transação recorrente
+              </label>
+            )}
 
             {state?.error && (
               <p className="text-sm text-alert" role="alert">

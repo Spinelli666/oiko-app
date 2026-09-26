@@ -61,7 +61,7 @@ export function LoginForm() {
 
       <p className="text-center text-sm text-text-secondary">
         Ainda não tem conta?{" "}
-        <Link href="/cadastro" className="font-medium text-primary">
+        <Link href="/register" className="font-medium text-primary">
           Cadastre-se
         </Link>
       </p>

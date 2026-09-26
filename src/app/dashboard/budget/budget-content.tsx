@@ -5,9 +5,9 @@ import { getBudgetsForCurrentMonth } from "@/lib/budgets";
 import { getCategoriesForUser } from "@/lib/categories";
 import { ensureRecurringTransactionsGenerated } from "@/lib/recurring-transactions";
 import { getTransactionsForUser, sumExpensesByCategory } from "@/lib/transactions";
-import { OrcamentoList } from "./orcamento-list";
+import { BudgetList } from "./budget-list";
 
-export async function OrcamentoContent() {
+export async function BudgetContent() {
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/login");
@@ -32,7 +32,7 @@ export async function OrcamentoContent() {
           orçamento.
         </p>
         <Link
-          href="/dashboard/categorias"
+          href="/dashboard/categories"
           className="w-fit rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
         >
           Criar categoria
@@ -64,7 +64,7 @@ export async function OrcamentoContent() {
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold sm:text-2xl">Orçamento do mês</h1>
 
-      <OrcamentoList rows={rows} />
+      <BudgetList rows={rows} />
     </div>
   );
 }

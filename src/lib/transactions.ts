@@ -122,6 +122,12 @@ export async function createTransaction({
   });
 }
 
+/** When `makeRecurring` is set, also creates a `RecurringTransaction` for
+ * this category/description/amount starting on `date`, and links the
+ * transaction to it — so future recurring-generation runs treat this
+ * transaction as that rule's occurrence for this month instead of creating
+ * a duplicate (see the `[recurringTransactionId, date]` unique constraint
+ * in `ensureRecurringTransactionsGenerated`). */
 export async function updateTransaction({
   id,
   userId,
@@ -129,6 +135,7 @@ export async function updateTransaction({
   description,
   amount,
   date,
+  makeRecurring = false,
 }: {
   id: string;
   userId: string;
@@ -136,6 +143,7 @@ export async function updateTransaction({
   description: string;
   amount: number;
   date: Date;
+  makeRecurring?: boolean;
 }) {
   const category = await getOwnedCategory(categoryId, userId);
   const signedAmount = category.kind === "DESPESA" ? -amount : amount;
@@ -147,6 +155,16 @@ export async function updateTransaction({
 
   if (count === 0) {
     throw new TransactionNotFoundError();
+  }
+
+  if (makeRecurring) {
+    const recurringTransaction = await prisma.recurringTransaction.create({
+      data: { userId, categoryId, description, amount, startDate: date },
+    });
+    await prisma.transaction.updateMany({
+      where: { id, userId },
+      data: { recurringTransactionId: recurringTransaction.id },
+    });
   }
 }
 

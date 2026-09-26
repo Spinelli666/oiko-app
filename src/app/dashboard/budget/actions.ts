@@ -43,7 +43,7 @@ export async function setBudgetAction(
     throw error;
   }
 
-  revalidatePath("/dashboard/orcamento");
+  revalidatePath("/dashboard/budget");
   revalidatePath("/dashboard");
 }
 
@@ -57,6 +57,6 @@ export async function removeBudgetAction(formData: FormData) {
 
   await removeBudget({ id, userId });
 
-  revalidatePath("/dashboard/orcamento");
+  revalidatePath("/dashboard/budget");
   revalidatePath("/dashboard");
 }

@@ -41,7 +41,7 @@ export async function createCategoryAction(
 
   await createCategory({ userId, ...parsed.data });
 
-  revalidatePath("/dashboard/categorias");
+  revalidatePath("/dashboard/categories");
 }
 
 export async function updateCategoryAction(
@@ -74,7 +74,7 @@ export async function updateCategoryAction(
     throw error;
   }
 
-  revalidatePath("/dashboard/categorias");
+  revalidatePath("/dashboard/categories");
 }
 
 export async function deleteCategoryAction(
@@ -111,5 +111,5 @@ export async function deleteCategoryAction(
     throw error;
   }
 
-  revalidatePath("/dashboard/categorias");
+  revalidatePath("/dashboard/categories");
 }

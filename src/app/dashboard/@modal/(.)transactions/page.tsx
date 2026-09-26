@@ -1,7 +1,7 @@
 import { Modal } from "@/components/modal";
-import { TransactionsContent } from "@/app/dashboard/transacoes/transactions-content";
+import { TransactionsContent } from "@/app/dashboard/transactions/transactions-content";
 
-export default function TransacoesModal() {
+export default function TransactionsModal() {
   return (
     <Modal>
       <TransactionsContent showTransactionsList={false} title="Lançar Transação" />

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
-import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
+import { CATEGORY_KIND_LABELS } from "../categories/category-type-labels";
 import { TransactionRow, type TransactionWithCategory } from "./transaction-row";
 
 export function TransactionsList({

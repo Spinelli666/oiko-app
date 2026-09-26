@@ -2,7 +2,7 @@ import Link from "next/link";
 import { parseMonthReference } from "@/lib/transactions";
 import { TransactionsContent } from "./transactions-content";
 
-export default async function TransacoesPage({
+export default async function TransactionsPage({
   searchParams,
 }: {
   searchParams: Promise<{ mes?: string }>;

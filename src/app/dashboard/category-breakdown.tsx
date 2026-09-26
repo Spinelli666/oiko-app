@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { categoryColorByIndex } from "@/lib/category-colors";
-import { TransactionRow, type TransactionWithCategory } from "./transacoes/transaction-row";
+import { TransactionRow, type TransactionWithCategory } from "./transactions/transaction-row";
 
 export type BreakdownNode = {
   categoryId: string;
@@ -192,19 +192,19 @@ export function CategoryBreakdown({
 
         <div className="flex flex-wrap gap-3">
           <Link
-            href="/dashboard/transacoes"
+            href="/dashboard/transactions"
             className="cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primary/90 active:scale-95"
           >
             Lançar Transação
           </Link>
           <Link
-            href="/dashboard/categorias"
+            href="/dashboard/categories"
             className="cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
           >
             Categorias
           </Link>
           <Link
-            href="/dashboard/orcamento"
+            href="/dashboard/budget"
             className="cursor-pointer rounded-md border border-text-secondary/30 px-4 py-2 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
           >
             Orçamento

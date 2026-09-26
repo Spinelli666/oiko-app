@@ -4,7 +4,7 @@ Sistema pessoal de gestão financeira — controle de receitas, despesas e orça
 
 Telas principais: cadastro/login, dashboard (saldo do mês, gráfico de evolução com filtro de período/granularidade, receitas/despesas por categoria, alertas de orçamento), transações (lançamento avulso ou recorrente, histórico filtrável por mês e categoria) e orçamento mensal por categoria.
 
-- Planejamento completo (motivação e escopo de cada versão): [docs/planejamento.md](./docs/planejamento.md)
+- Planejamento completo (motivação e escopo de cada versão): [docs/planning.md](./docs/planning.md)
 - Checklist detalhado do que já foi implementado: [docs/status.md](./docs/status.md)
 
 ## Stack

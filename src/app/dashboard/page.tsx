@@ -16,7 +16,7 @@ import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { BudgetAlertBanner } from "./budget-alert-banner";
 import { CategoryBreakdown, type BreakdownNode } from "./category-breakdown";
 import { EvolutionSection } from "./evolution-section";
-import type { TransactionWithCategory } from "./transacoes/transaction-row";
+import type { TransactionWithCategory } from "./transactions/transaction-row";
 
 const EVOLUTION_LOOKBACK_YEARS = 5;
 

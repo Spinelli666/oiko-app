@@ -46,7 +46,7 @@ export async function TransactionsContent({
           transação.
         </p>
         <Link
-          href="/dashboard/categorias"
+          href="/dashboard/categories"
           className="w-fit rounded-md bg-primary px-4 py-2 text-sm font-medium text-white"
         >
           Criar categoria

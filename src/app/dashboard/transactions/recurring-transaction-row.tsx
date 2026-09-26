@@ -9,7 +9,7 @@ import {
   toggleRecurringTransactionAction,
   updateRecurringTransactionAction,
 } from "./actions";
-import { CATEGORY_KIND_LABELS } from "../categorias/category-type-labels";
+import { CATEGORY_KIND_LABELS } from "../categories/category-type-labels";
 
 export type RecurringTransactionWithCategory = Omit<
   RecurringTransactionGetPayload<{ include: { category: true } }>,

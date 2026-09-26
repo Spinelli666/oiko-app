@@ -24,7 +24,7 @@ export default async function Home() {
           Entrar
         </Link>
         <Link
-          href="/cadastro"
+          href="/register"
           className="rounded-md border border-text-secondary/30 px-5 py-2 font-medium"
         >
           Criar conta

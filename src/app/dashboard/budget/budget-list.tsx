@@ -11,7 +11,7 @@ export type BudgetRowData = {
   spentAmount: number;
 };
 
-export function OrcamentoList({ rows }: { rows: BudgetRowData[] }) {
+export function BudgetList({ rows }: { rows: BudgetRowData[] }) {
   const [query, setQuery] = useState("");
 
   const term = query.trim().toLowerCase();

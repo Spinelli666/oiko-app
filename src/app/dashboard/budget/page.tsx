@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { OrcamentoContent } from "./orcamento-content";
+import { BudgetContent } from "./budget-content";
 
-export default function OrcamentoPage() {
+export default function BudgetPage() {
   return (
     <div className="flex flex-1 flex-col px-4 py-10">
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
@@ -13,7 +13,7 @@ export default function OrcamentoPage() {
             Voltar
           </Link>
         </div>
-        <OrcamentoContent />
+        <BudgetContent />
       </div>
     </div>
   );
