@@ -37,13 +37,17 @@ const YEAR_LABEL_FORMATTER = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "UTC",
 });
 
+function capitalize(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 function formatBucketLabel(date: Date, granularity: Granularity) {
   switch (granularity) {
     case "diario":
     case "semanal":
       return DAY_LABEL_FORMATTER.format(date);
     case "mensal":
-      return MONTH_LABEL_FORMATTER.format(date);
+      return capitalize(MONTH_LABEL_FORMATTER.format(date));
     case "anual":
       return YEAR_LABEL_FORMATTER.format(date);
   }

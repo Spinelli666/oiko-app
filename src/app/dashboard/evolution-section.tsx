@@ -99,102 +99,100 @@ export function EvolutionSection({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2">
-        {GRANULARITY_OPTIONS.map((option) => (
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-2">
+          {GRANULARITY_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => selectGranularity(option.value)}
+              className={
+                granularity === option.value && !customRange
+                  ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+                  : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+              }
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        {!isLocked && (
+          <form
+            key={formKey}
+            action={handleCustomRangeSubmit}
+            className="ml-auto flex flex-wrap items-end gap-2"
+          >
+            <div className="flex flex-col gap-1">
+              <label htmlFor="evolution-from" className="text-xs text-text-secondary">
+                De
+              </label>
+              <input
+                id="evolution-from"
+                name="from"
+                type="date"
+                defaultValue={toDateInputValue(range.from)}
+                className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label htmlFor="evolution-to" className="text-xs text-text-secondary">
+                Até
+              </label>
+              <input
+                id="evolution-to"
+                name="to"
+                type="date"
+                defaultValue={toDateInputValue(range.to)}
+                className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
+              />
+            </div>
+            <button
+              type="submit"
+              className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+            >
+              Filtrar
+            </button>
+            {customRange && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCustomRange(null);
+                  setRangeError(null);
+                }}
+                className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+              >
+                Limpar período
+              </button>
+            )}
+          </form>
+        )}
+      </div>
+
+      {granularity !== "diario" && (
+        <div className="flex flex-wrap items-center gap-2">
           <button
-            key={option.value}
             type="button"
-            onClick={() => selectGranularity(option.value)}
+            onClick={() => setViewMode("total")}
             className={
-              granularity === option.value && !customRange
+              viewMode === "total"
                 ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
                 : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
             }
           >
-            {option.label}
+            Total
           </button>
-        ))}
-      </div>
-
-      {(granularity !== "diario" || !isLocked) && (
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          {granularity !== "diario" && (
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setViewMode("total")}
-                className={
-                  viewMode === "total"
-                    ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
-                    : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
-                }
-              >
-                Total
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode("categorias")}
-                className={
-                  viewMode === "categorias"
-                    ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
-                    : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
-                }
-              >
-                Por categoria
-              </button>
-            </div>
-          )}
-
-          {!isLocked && (
-            <form
-              key={formKey}
-              action={handleCustomRangeSubmit}
-              className="ml-auto flex flex-wrap items-end gap-2"
-            >
-              <div className="flex flex-col gap-1">
-                <label htmlFor="evolution-from" className="text-xs text-text-secondary">
-                  De
-                </label>
-                <input
-                  id="evolution-from"
-                  name="from"
-                  type="date"
-                  defaultValue={toDateInputValue(range.from)}
-                  className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label htmlFor="evolution-to" className="text-xs text-text-secondary">
-                  Até
-                </label>
-                <input
-                  id="evolution-to"
-                  name="to"
-                  type="date"
-                  defaultValue={toDateInputValue(range.to)}
-                  className="rounded-md border border-text-secondary/30 bg-surface px-2 py-1.5 text-sm outline-none focus:border-primary"
-                />
-              </div>
-              <button
-                type="submit"
-                className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
-              >
-                Filtrar
-              </button>
-              {customRange && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCustomRange(null);
-                    setRangeError(null);
-                  }}
-                  className="cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
-                >
-                  Limpar período
-                </button>
-              )}
-            </form>
-          )}
+          <button
+            type="button"
+            onClick={() => setViewMode("categorias")}
+            className={
+              viewMode === "categorias"
+                ? "cursor-pointer rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-white transition active:scale-95"
+                : "cursor-pointer rounded-md border border-text-secondary/30 px-3 py-1.5 text-sm font-medium transition hover:bg-text-secondary/10 active:scale-95"
+            }
+          >
+            Por categoria
+          </button>
         </div>
       )}
 
