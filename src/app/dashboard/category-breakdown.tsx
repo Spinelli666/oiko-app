@@ -2,21 +2,16 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { categoryColorByIndex } from "@/lib/category-colors";
-
-export type BreakdownTransaction = {
-  id: string;
-  description: string;
-  amount: number;
-  date: string;
-};
+import { TransactionRow, type TransactionWithCategory } from "./transacoes/transaction-row";
 
 export type BreakdownNode = {
   categoryId: string;
   name: string;
   total: number;
   limit?: number;
-  transactions: BreakdownTransaction[];
+  transactions: TransactionWithCategory[];
 };
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -24,14 +19,14 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   currency: "BRL",
 });
 
-const dateFormatter = new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" });
-
 function CategoryBreakdownList({
   nodes,
   isExpense,
+  categories,
 }: {
   nodes: BreakdownNode[];
   isExpense: boolean;
+  categories: CategoryModel[];
 }) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const maxTotal = Math.max(1, ...nodes.map((n) => n.total));
@@ -103,25 +98,14 @@ function CategoryBreakdownList({
                 isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
               }`}
             >
-              <ul className="flex min-h-0 flex-col gap-2 pl-6 pt-2">
+              <ul className="flex min-h-0 flex-col pl-6 pt-2">
                 {node.transactions.map((transaction) => (
-                  <li
+                  <TransactionRow
                     key={transaction.id}
-                    className="flex items-center justify-between gap-3"
-                  >
-                    <div>
-                      <p className="text-sm text-text-secondary">
-                        {transaction.description}
-                      </p>
-                      <p className="text-xs text-text-secondary/70">
-                        {dateFormatter.format(new Date(transaction.date))}
-                      </p>
-                    </div>
-                    <span className={`text-sm font-medium ${amountColor}`}>
-                      {sign}
-                      {currencyFormatter.format(transaction.amount)}
-                    </span>
-                  </li>
+                    transaction={transaction}
+                    categories={categories}
+                    editMode="dialog"
+                  />
                 ))}
               </ul>
             </div>
@@ -137,9 +121,11 @@ type Filter = "receitas" | "despesas" | null;
 export function CategoryBreakdown({
   income,
   expenses,
+  categories,
 }: {
   income: BreakdownNode[];
   expenses: BreakdownNode[];
+  categories: CategoryModel[];
 }) {
   const [filter, setFilter] = useState<Filter>(null);
 
@@ -188,7 +174,11 @@ export function CategoryBreakdown({
                 Nenhuma receita lançada neste mês ainda.
               </p>
             ) : (
-              <CategoryBreakdownList nodes={income} isExpense={false} />
+              <CategoryBreakdownList
+                nodes={income}
+                isExpense={false}
+                categories={categories}
+              />
             )}
           </div>
         )}
@@ -203,7 +193,11 @@ export function CategoryBreakdown({
                 Nenhuma despesa lançada neste mês ainda.
               </p>
             ) : (
-              <CategoryBreakdownList nodes={expenses} isExpense={true} />
+              <CategoryBreakdownList
+                nodes={expenses}
+                isExpense={true}
+                categories={categories}
+              />
             )}
           </div>
         )}

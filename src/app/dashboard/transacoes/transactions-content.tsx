@@ -14,9 +14,11 @@ import { TransactionsList } from "./transactions-list";
 export async function TransactionsContent({
   monthReference,
   withMonthNav = false,
+  showTransactionsList = true,
 }: {
   monthReference?: Date;
   withMonthNav?: boolean;
+  showTransactionsList?: boolean;
 } = {}) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -67,13 +69,15 @@ export async function TransactionsContent({
         }))}
       />
 
-      <TransactionsList
-        transactions={transactions.map((transaction) => ({
-          ...transaction,
-          amount: Number(transaction.amount),
-        }))}
-        categories={categories}
-      />
+      {showTransactionsList && (
+        <TransactionsList
+          transactions={transactions.map((transaction) => ({
+            ...transaction,
+            amount: Number(transaction.amount),
+          }))}
+          categories={categories}
+        />
+      )}
     </div>
   );
 }

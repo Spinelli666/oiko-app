@@ -14,6 +14,7 @@ import type { CategoryModel } from "@/generated/prisma/models/Category";
 import { BudgetAlertBanner } from "./budget-alert-banner";
 import { CategoryBreakdown, type BreakdownNode } from "./category-breakdown";
 import { EvolutionSection } from "./evolution-section";
+import type { TransactionWithCategory } from "./transacoes/transaction-row";
 
 const EVOLUTION_LOOKBACK_YEARS = 5;
 
@@ -27,23 +28,16 @@ function evolutionLookbackStart(reference = todayInAppTimezone()) {
   );
 }
 
-type MonthTransaction = {
-  id: string;
-  categoryId: string;
-  description: string;
-  amount: number;
-  date: Date;
-};
-
 /** Groups a month's transactions by category into sorted breakdown nodes,
- * keeping each transaction's description for the expanded view. Only
- * categories with at least one matching transaction are kept. */
+ * keeping each full transaction so the expanded view can reuse the same
+ * edit/delete row used elsewhere. Only categories with at least one
+ * matching transaction are kept. */
 function buildBreakdownNodes(
   categories: CategoryModel[],
-  transactions: MonthTransaction[],
+  transactions: TransactionWithCategory[],
   limitByCategory?: Map<string, number>
 ): BreakdownNode[] {
-  const transactionsByCategory = new Map<string, MonthTransaction[]>();
+  const transactionsByCategory = new Map<string, TransactionWithCategory[]>();
   for (const transaction of transactions) {
     const list = transactionsByCategory.get(transaction.categoryId) ?? [];
     list.push(transaction);
@@ -66,12 +60,7 @@ function buildBreakdownNodes(
         name: category.name,
         total,
         limit: limitByCategory?.get(category.id),
-        transactions: categoryTransactions.map((t) => ({
-          id: t.id,
-          description: t.description,
-          amount: Math.abs(t.amount),
-          date: t.date.toISOString(),
-        })),
+        transactions: categoryTransactions,
       };
     })
     .filter((node) => node.total > 0)
@@ -122,12 +111,9 @@ export default async function DashboardPage() {
     transactions.map((t) => [t.categoryId, t.category.name])
   );
 
-  const monthTransactions: MonthTransaction[] = transactions.map((t) => ({
-    id: t.id,
-    categoryId: t.categoryId,
-    description: t.description,
+  const monthTransactions: TransactionWithCategory[] = transactions.map((t) => ({
+    ...t,
     amount: Number(t.amount),
-    date: t.date,
   }));
   const expenseTransactions = monthTransactions.filter((t) => t.amount < 0);
   const incomeTransactions = monthTransactions.filter((t) => t.amount > 0);
@@ -227,7 +213,11 @@ export default async function DashboardPage() {
           />
         </div>
 
-        <CategoryBreakdown income={incomeNodes} expenses={expenseNodes} />
+        <CategoryBreakdown
+          income={incomeNodes}
+          expenses={expenseNodes}
+          categories={categories}
+        />
       </div>
     </div>
   );

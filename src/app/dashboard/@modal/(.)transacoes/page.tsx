@@ -4,7 +4,7 @@ import { TransactionsContent } from "@/app/dashboard/transacoes/transactions-con
 export default function TransacoesModal() {
   return (
     <Modal>
-      <TransactionsContent />
+      <TransactionsContent showTransactionsList={false} />
     </Modal>
   );
 }
