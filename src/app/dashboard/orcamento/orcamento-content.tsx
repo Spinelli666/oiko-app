@@ -26,7 +26,7 @@ export async function OrcamentoContent() {
   if (expenseCategories.length === 0) {
     return (
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold">Orçamento mensal</h1>
+        <h1 className="text-xl font-semibold sm:text-2xl">Orçamento mensal</h1>
         <p className="text-text-secondary">
           Você precisa de uma categoria de despesa antes de definir um
           orçamento.
@@ -62,7 +62,7 @@ export async function OrcamentoContent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Orçamento do mês</h1>
+      <h1 className="text-xl font-semibold sm:text-2xl">Orçamento do mês</h1>
 
       <OrcamentoList rows={rows} />
     </div>

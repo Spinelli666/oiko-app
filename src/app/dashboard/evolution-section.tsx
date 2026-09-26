@@ -17,6 +17,11 @@ const GRANULARITY_OPTIONS: Array<{ value: Granularity; label: string }> = [
   { value: "anual", label: "Anual" },
 ];
 
+// Semanal e Anual são sempre travados no período padrão (últimas 7
+// semanas / últimos 7 anos): não faz sentido filtrar um período maior
+// nessas granularidades, então o filtro De/Até nem aparece.
+const LOCKED_GRANULARITIES: Granularity[] = ["semanal", "anual"];
+
 function toDateInputValue(date: Date) {
   return date.toISOString().slice(0, 10);
 }
@@ -45,10 +50,8 @@ export function EvolutionSection({
   // suficiente para caber lado a lado.
   const effectiveViewMode = granularity === "diario" ? "categorias" : viewMode;
 
-  // O Diário é sempre travado nos últimos 7 dias: ignora o período
-  // customizado para não permitir uma janela maior nessa granularidade.
-  const range =
-    granularity === "diario" ? defaultRangeFor(granularity) : customRange ?? defaultRangeFor(granularity);
+  const isLocked = LOCKED_GRANULARITIES.includes(granularity);
+  const range = isLocked ? defaultRangeFor(granularity) : customRange ?? defaultRangeFor(granularity);
 
   const buckets = useMemo(
     () => bucketsInRange(range.from, range.to, granularity),
@@ -140,7 +143,7 @@ export function EvolutionSection({
         </div>
       )}
 
-      {granularity !== "diario" && (
+      {!isLocked && (
         <form
           key={formKey}
           action={handleCustomRangeSubmit}
@@ -191,7 +194,7 @@ export function EvolutionSection({
         </form>
       )}
 
-      {granularity !== "diario" && rangeError && (
+      {!isLocked && rangeError && (
         <p className="text-sm text-alert" role="alert">
           {rangeError}
         </p>

@@ -32,7 +32,7 @@ export async function CategoriesContent() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Categorias</h1>
+      <h1 className="text-xl font-semibold sm:text-2xl">Categorias</h1>
 
       <CategoriesList
         receitas={receitas}

@@ -123,7 +123,7 @@ export function TransactionRow({
       <div>
         <p className="font-medium">{transaction.description}</p>
         <p className="text-sm text-text-secondary">
-          {transaction.category.name} ·{" "}
+          {editMode === "inline" && `${transaction.category.name} · `}
           {dateFormatter.format(transaction.date)}
         </p>
       </div>

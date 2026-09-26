@@ -157,7 +157,7 @@ export default async function DashboardPage() {
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">
+            <h1 className="text-xl font-semibold sm:text-2xl">
               Olá, {session.user.name}
             </h1>
             <p className="text-sm text-text-secondary">{session.user.email}</p>
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
         <div className="rounded-lg border border-text-secondary/20 bg-surface p-6">
           <p className="text-sm text-text-secondary">Saldo do mês</p>
           <p
-            className={`text-3xl font-semibold ${
+            className={`text-2xl font-semibold sm:text-3xl ${
               balance < 0 ? "text-alert" : "text-success"
             }`}
           >

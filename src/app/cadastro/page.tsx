@@ -20,7 +20,7 @@ export default async function CadastroPage() {
           className="mx-auto mb-6 h-20 w-auto"
           priority
         />
-        <h1 className="mb-1 text-2xl font-semibold">Criar conta</h1>
+        <h1 className="mb-1 text-xl font-semibold sm:text-2xl">Criar conta</h1>
         <p className="mb-6 text-sm text-text-secondary">
           Comece a controlar suas finanças pessoais.
         </p>

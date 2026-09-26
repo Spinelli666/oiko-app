@@ -210,18 +210,18 @@ describe("defaultRangeFor", () => {
     expect(to).toBe(reference);
   });
 
-  it("anual: últimos 5 anos terminando hoje", () => {
+  it("anual: últimos 7 anos terminando hoje", () => {
     const reference = new Date(Date.UTC(2026, 8, 19));
     const { from } = defaultRangeFor("anual", reference);
 
-    expect(from.toISOString()).toBe("2022-01-01T00:00:00.000Z");
+    expect(from.toISOString()).toBe("2020-01-01T00:00:00.000Z");
   });
 
-  it("semanal: últimas 8 semanas terminando hoje", () => {
+  it("semanal: últimas 7 semanas terminando hoje", () => {
     const reference = new Date(Date.UTC(2026, 8, 19)); // sábado
     const { from } = defaultRangeFor("semanal", reference);
 
-    // segunda da semana de referência é 14/09; 7 semanas antes = 27/07
-    expect(from.toISOString()).toBe("2026-07-27T00:00:00.000Z");
+    // segunda da semana de referência é 14/09; 6 semanas antes = 03/08
+    expect(from.toISOString()).toBe("2026-08-03T00:00:00.000Z");
   });
 });
